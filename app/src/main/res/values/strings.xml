@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">LiveSplit Remote</string>
+    <string name="pref_id" type="id">Livesplit_Remote</string>
+</resources>

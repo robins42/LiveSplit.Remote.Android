@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_ip"
+        android:title="Set LiveSplit Server IP"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_pausetimer"
+        android:enabled="false"
+        android:title="Pause timer"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_resettimer"
+        android:title="Reset timer"
+        app:showAsAction="never" />
+</menu>

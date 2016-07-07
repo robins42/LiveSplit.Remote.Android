@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="de.ekelbatzen.livesplitremote.MainActivity">
+
+    <TextView
+        android:id="@+id/text_warnings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:text="Server IP has not been set yet."
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/theBigButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Start Timer"
+        android:textSize="40sp" />
+
+</LinearLayout>
