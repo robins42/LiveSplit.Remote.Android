@@ -17,4 +17,9 @@
         android:id="@+id/menu_resettimer"
         android:title="Reset timer"
         app:showAsAction="never" />
+
+    <!--<item-->
+        <!--android:id="@+id/menu_crash"-->
+        <!--android:title="CRASH APP"-->
+        <!--app:showAsAction="never" />-->
 </menu>

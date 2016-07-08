@@ -3,8 +3,10 @@ package de.ekelbatzen.livesplitremote;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +30,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, final Throwable e) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        e.printStackTrace();
+
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                Looper.prepare();
+                                Toast.makeText(getApplicationContext(), Log.getStackTraceString(e), Toast.LENGTH_LONG).show();
+                                Looper.loop();
+                            }
+                        }.start();
+
+                        // Wait for the toast to disappear
+                        try {
+                            Thread.sleep(4000L);
+                        } catch (InterruptedException ignored) {
+                            // Ignored
+                        }
+
+                        finish();
+                        System.exit(0);
+                    }
+                }.start();
+            }
+        });
+
         setContentView(R.layout.activity_main);
         timerState = TimerState.STOPPED;
 
@@ -57,17 +91,17 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         if (timerState == TimerState.STOPPED) {
-                            new Network().execute(ip.getHostAddress(), ""+port, LiveSplitCommand.START.toString());
+                            new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.START.toString());
                             timerState = TimerState.STARTED;
                             theButton.setText("Split");
                             invalidateOptionsMenu();
                         } else if (timerState == TimerState.PAUSED) {
-                            new Network().execute(ip.getHostAddress(), ""+port, LiveSplitCommand.RESUME.toString());
+                            new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.RESUME.toString());
                             timerState = TimerState.STARTED;
                             theButton.setText("Split");
                             invalidateOptionsMenu();
                         } else if (timerState == TimerState.STARTED) {
-                            new Network().execute(ip.getHostAddress(), ""+port, LiveSplitCommand.SPLIT.toString());
+                            new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.SPLIT.toString());
                         }
                     }
                 });
@@ -97,17 +131,19 @@ public class MainActivity extends AppCompatActivity {
                 setIP();
                 return true;
             case R.id.menu_pausetimer:
-                new Network().execute(ip.getHostAddress(), ""+port, LiveSplitCommand.PAUSE.toString());
+                new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.PAUSE.toString());
                 timerState = TimerState.PAUSED;
                 invalidateOptionsMenu();
                 theButton.setText("Resume Timer");
                 return true;
             case R.id.menu_resettimer:
-                new Network().execute(ip.getHostAddress(), ""+port, LiveSplitCommand.RESET.toString());
+                new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.RESET.toString());
                 timerState = TimerState.STOPPED;
                 invalidateOptionsMenu();
                 theButton.setText("Start Timer");
                 return true;
+//            case R.id.menu_crash:
+//                throw new NullPointerException("This is a test");
             default:
                 return false;
         }
