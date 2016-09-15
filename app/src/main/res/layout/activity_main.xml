@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     tools:context="de.ekelbatzen.livesplitremote.MainActivity">
 
     <TextView
@@ -12,15 +14,82 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingBottom="20dp"
-        android:text="Server IP has not been set yet."
+        android:text="@string/serverIpNotSet"
         android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/theBigButton"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Start Timer"
-        android:textSize="40sp" />
+        android:orientation="vertical">
 
+        <!-- Spacer to avoid nested weights in LinearLayouts -->
+        <View
+            android:id="@+id/startSpacer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true" />
+
+        <Button
+            android:id="@+id/startSplitButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/startSpacer"
+            android:text="@string/startTimer"
+            android:textSize="40sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/startSpacer"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/timer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/timerPlaceholder"
+                android:textColor="@color/timerColor"
+                android:textSize="40sp"
+                android:typeface="monospace" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <!-- Spacer to avoid nested weights in LinearLayouts -->
+                <View
+                    android:id="@+id/undoSkipSpacer"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_centerInParent="true" />
+
+                <Button
+                    android:id="@+id/undoButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@id/undoSkipSpacer"
+                    android:text="@string/undoSplit"
+                    android:textSize="30sp" />
+
+                <Button
+                    android:id="@+id/skipButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/undoSkipSpacer"
+                    android:text="@string/skipSplit"
+                    android:textSize="30sp" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/pauseButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/pauseTimer"
+                android:textSize="30sp" />
+        </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>
