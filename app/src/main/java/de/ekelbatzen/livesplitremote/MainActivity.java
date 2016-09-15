@@ -224,17 +224,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        getTimeInMs(new NetworkResponseListener() {
-            @Override
-            public void onResponse(String response) {
-                if (response != null) {
-                    timer.setMs(response);
-                    if (timerState == TimerState.Running) {
-                        timer.start();
+        if(ip != null){
+            getTimeInMs(new NetworkResponseListener() {
+                @Override
+                public void onResponse(String response) {
+                    if (response != null) {
+                        timer.setMs(response);
+                        if (timerState == TimerState.Running) {
+                            timer.start();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     private void setIP() {

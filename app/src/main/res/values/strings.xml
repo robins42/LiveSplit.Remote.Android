@@ -15,7 +15,7 @@
     <string name="ipNotReached">Server unavailable.\nHave you configured it in the layout\nand started it via Control > Start Server?</string>
     <string name="displayIp">Server IP is set to %1$s</string>
 
-    <string name="timerPlaceholder">00:00:00.0</string>
+    <string name="timerPlaceholder">00:00:00.00</string>
     <string name="startTimer">Start</string>
     <string name="undoSplit">Undo</string>
     <string name="skipSplit">Skip</string>
