@@ -1,6 +1,7 @@
 package de.ekelbatzen.livesplitremote;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,16 +18,17 @@ import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 public class Network extends AsyncTask<String, String, String> {
     private final NetworkResponseListener listener;
 
-    public Network(){
+    public Network() {
         this.listener = null;
     }
 
-    public Network(NetworkResponseListener listener){
+    public Network(NetworkResponseListener listener) {
         this.listener = listener;
     }
 
     @Override
     protected String doInBackground(String... args) {
+        Log.w("Network", "Sending " + args[2] + " to " + args[0] + ':' + args[1]);
         InetAddress ip = null;
         try {
             ip = InetAddress.getByName(args[0]);
@@ -36,7 +38,7 @@ public class Network extends AsyncTask<String, String, String> {
         int port = Integer.parseInt(args[1]);
         String cmd = args[2];
         boolean listenForResponse = false;
-        if(args.length > 3){
+        if (args.length > 3) {
             listenForResponse = Boolean.parseBoolean(args[3]);
         }
 
@@ -53,30 +55,31 @@ public class Network extends AsyncTask<String, String, String> {
             br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
             osw.write(cmd + "\r\n");
             osw.flush();
-            if(listenForResponse){
+            if (listenForResponse) {
                 response = br.readLine();
             }
         } catch (Exception e) {
+            Log.w("Network", "Got an exception trying to send " + cmd + " to " + ip + ':' + port);
             e.printStackTrace();
         } finally {
-            if(br != null){
-                try{
+            if (br != null) {
+                try {
                     br.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-            if(osw != null){
-                try{
+            if (osw != null) {
+                try {
                     osw.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-            if(socket != null){
-                try{
+            if (socket != null) {
+                try {
                     socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -89,7 +92,7 @@ public class Network extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPostExecute(String response) {
-        if(listener != null){
+        if (listener != null) {
             listener.onResponse(response);
         }
     }

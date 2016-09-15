@@ -1,5 +1,8 @@
 package de.ekelbatzen.livesplitremote;
 
+import android.content.Context;
+import android.graphics.Canvas;
+import android.util.AttributeSet;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -11,73 +14,81 @@ import java.util.TimeZone;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 
 @SuppressWarnings("HardCodedStringLiteral")
-public class Timer extends Thread {
-    private static final long MS_BETWEEN_POLLS = 10_000L;
-    private TextView text;
-    private MainActivity act;
+public class Timer extends TextView {
+    private static final long MS_BETWEEN_POLLS = 3000L;
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd m:ss.SS", Locale.ENGLISH);
     private long ms;
     private long lastPoll;
+    private boolean running;
+    long lastTick;
+    private MainActivity act;
 
-    public Timer(TextView text, MainActivity act) {
-        this.text = text;
-        this.act = act;
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        ms = 0L;
+    public Timer(Context context) {
+        super(context);
+        init();
     }
 
-    public void stopTimer(){
-        interrupt();
-        text = null;
-        act = null;
+    public Timer(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public Timer(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        ms = 0L;
+        running = false;
+        lastTick = System.currentTimeMillis();
+    }
+
+    public void stopTimer() {
+        running = false;
+    }
+
+    public void start() {
+        running = true;
+        lastTick = System.currentTimeMillis();
+        invalidate();
     }
 
     @Override
-    public void run() {
-        long lastTick = System.currentTimeMillis();
+    protected void onDraw(Canvas canvas) {
+        if (running) {
+            ms += System.currentTimeMillis() - lastTick;
+            lastTick = System.currentTimeMillis();
+            setText(msToTimeformat());
 
-        while (true) {
-            try {
-                sleep(100L);
-                ms += System.currentTimeMillis() - lastTick;
-                lastTick = System.currentTimeMillis();
-                updateText();
-
-                if(System.currentTimeMillis() - lastPoll > MS_BETWEEN_POLLS && act != null) {
-                    act.getTimeInMs(new NetworkResponseListener() {
-                        @Override
-                        public void onResponse(String response) {
-                            if(response != null){
-                                setMs(response);
-                            } else {
-                                lastPoll = System.currentTimeMillis();
-                            }
+            if (System.currentTimeMillis() - lastPoll > MS_BETWEEN_POLLS && act != null) {
+                act.getTimeInMs(new NetworkResponseListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (response != null) {
+                            setMs(response);
                         }
-                    });
-                }
-            } catch (InterruptedException e) {
-                break;
+                    }
+                });
+                lastPoll = System.currentTimeMillis();
             }
+
+            super.onDraw(canvas);
+            invalidate();
+        } else {
+            super.onDraw(canvas);
         }
     }
 
-    private void updateText() {
-        if(act != null){
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(text != null){
-                        text.setText(msToTimeformat());
-                    }
-                }
-            });
-        }
+    public void setActivity(MainActivity act) {
+        this.act = act;
     }
 
     public void setMs(long ms) {
         this.ms = ms;
         lastPoll = System.currentTimeMillis();
-        updateText();
+        setText(msToTimeformat());
     }
 
     public void setMs(String lsTime) {
@@ -91,23 +102,17 @@ public class Timer extends Thread {
                 e2.printStackTrace();
             }
         }
-        if(d != null){
+        if (d != null) {
             setMs(d.getTime());
         }
     }
 
-    public long getMs() {
-        return ms;
-    }
-
     private String msToTimeformat() {
-        String msShort = String.format(Locale.ENGLISH, "%1d", ms % 1000L / 100L);
+        String msShort = String.format(Locale.ENGLISH, "%02d", (ms % 1000L) / 10L);
         long allSeconds = ms / 1000L;
         String s = String.format(Locale.ENGLISH, "%02d", allSeconds % 60L);
         String m = String.format(Locale.ENGLISH, "%02d", (allSeconds / 60L) % 60L);
         String h = String.format(Locale.ENGLISH, "%02d", (allSeconds / (60L * 60L)) % 24L);
         return h + ':' + m + ':' + s + '.' + msShort;
     }
-
-
 }

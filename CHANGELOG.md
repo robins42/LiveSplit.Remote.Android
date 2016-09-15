@@ -18,3 +18,9 @@
 
 0.1.1:
 - Fixed minor text bug
+
+0.1.2:
+- Timer now has 2 decimal digits
+- Timer now updates every frame when running
+- Timer synchronization rate increased: 10s -> 3s
+- Improved thread protocol execution for older android versions

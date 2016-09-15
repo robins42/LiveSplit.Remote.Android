@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private Button skipButton;
     private Button pauseButton;
     private Timer timer;
-    private TextView timerText;
     private boolean checkTimerPhase;
 
     @Override
@@ -82,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
         Button undoButton = (Button) findViewById(R.id.undoButton);
         skipButton = (Button) findViewById(R.id.skipButton);
         pauseButton = (Button) findViewById(R.id.pauseButton);
-        timerText = (TextView) findViewById(R.id.timer);
+        timer = (Timer) findViewById(R.id.timer);
+        timer.setActivity(this);
 
         String savedIP = getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).getString(getString(R.string.settingsIdIp), null);
         checkTimerPhase = getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).getBoolean(getString(R.string.settingsIdTimerphase), false);
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_timerphase:
                 checkTimerPhase = !checkTimerPhase;
                 item.setChecked(checkTimerPhase);
-                if(checkTimerPhase){
+                if (checkTimerPhase) {
                     Toast.makeText(this, R.string.timerphaseHint, Toast.LENGTH_LONG).show();
                 }
                 getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).edit().putBoolean(getString(R.string.settingsIdTimerphase), checkTimerPhase).apply();
@@ -223,20 +223,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (timer != null) {
-            timer = new Timer(timerText, this);
-            getTimeInMs(new NetworkResponseListener() {
-                @Override
-                public void onResponse(String response) {
-                    if (response != null) {
-                        timer.setMs(response);
-                        if(timerState == TimerState.Running){
-                            timer.start();
-                        }
+
+        getTimeInMs(new NetworkResponseListener() {
+            @Override
+            public void onResponse(String response) {
+                if (response != null) {
+                    timer.setMs(response);
+                    if (timerState == TimerState.Running) {
+                        timer.start();
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     private void setIP() {
@@ -246,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         inputField.setHint(R.string.setIpInputHint);
         if (tempIpFromDialog != null) {
             inputField.setText(tempIpFromDialog);
-        } else if(ip != null){
+        } else if (ip != null) {
             inputField.setText(ip.getHostAddress());
         }
         builder.setView(inputField);
@@ -322,25 +320,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTimer(boolean checkFirst) {
-        if(checkFirst){
+        if (checkFirst) {
             pingServer(new PingListener() {
                 @Override
-                public void onPing(boolean wasReached) {
-                    if (wasReached) {
-                        new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.START.toString());
-                        timerState = TimerState.Running;
-                        startSplitButton.setText(R.string.splitText);
-                        invalidateOptionsMenu();
-                        timer = new Timer(timerText, MainActivity.this);
-                        timer.start();
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                public void onPing(final boolean wasReached) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (wasReached) {
+                                new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.START.toString());
+                                timerState = TimerState.Running;
+                                startSplitButton.setText(R.string.splitText);
+                                invalidateOptionsMenu();
+                                timer.start();
+                            } else {
                                 Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG).show();
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             });
         } else {
@@ -348,7 +345,6 @@ public class MainActivity extends AppCompatActivity {
             timerState = TimerState.Running;
             startSplitButton.setText(R.string.splitText);
             invalidateOptionsMenu();
-            timer = new Timer(timerText, MainActivity.this);
             timer.start();
         }
     }
@@ -356,11 +352,11 @@ public class MainActivity extends AppCompatActivity {
     private void split() {
         new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.SPLIT.toString());
 
-        if(checkTimerPhase) {
+        if (checkTimerPhase) {
             getTimerPhase(new NetworkResponseListener() {
                 @Override
                 public void onResponse(String ignored) {
-                    if(timerState == TimerState.Ended){
+                    if (timerState == TimerState.Ended) {
                         timeFinished();
                     }
                 }
@@ -373,19 +369,12 @@ public class MainActivity extends AppCompatActivity {
         timerState = TimerState.Running;
         startSplitButton.setText(R.string.splitText);
         invalidateOptionsMenu();
-        long ms = 0L;
-        if (timer != null) {
-            ms = timer.getMs();
-            timer.stopTimer();
-        }
-        timer = new Timer(timerText, this);
-        timer.setMs(ms);
         timer.start();
     }
 
     private void undoSplit() {
         new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.UNDO.toString());
-        if(timerState == TimerState.Ended){
+        if (timerState == TimerState.Ended) {
             startSplitButton.setText(R.string.splitText);
             timerState = TimerState.Running;
         }
@@ -393,30 +382,25 @@ public class MainActivity extends AppCompatActivity {
         skipButton.setEnabled(true);
         pauseButton.setEnabled(true);
 
-        if(checkTimerPhase){
+        if (checkTimerPhase) {
             getTimerPhase(new NetworkResponseListener() {
                 @Override
                 public void onResponse(String response) {
-                    if(timerState == TimerState.Running){
-                        if(timer != null){
-                            timer.stopTimer();
-                        }
-
-                        timer = new Timer(timerText, MainActivity.this);
+                    if (timerState == TimerState.Running) {
                         timer.start();
                     }
-
-                    getTimeInMs(new NetworkResponseListener() {
-                        @Override
-                        public void onResponse(String response) {
-                            if (response != null) {
-                                timer.setMs(response);
-                            }
-                        }
-                    });
                 }
             });
         }
+
+        getTimeInMs(new NetworkResponseListener() {
+            @Override
+            public void onResponse(String response) {
+                if (response != null) {
+                    timer.setMs(response);
+                }
+            }
+        });
     }
 
     private void skipSplit() {
@@ -429,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
         invalidateOptionsMenu();
         startSplitButton.setText(R.string.resumeText);
         if (timer != null) {
-            timer.interrupt();
+            timer.stopTimer();
         }
         getTimeInMs(new NetworkResponseListener() {
             @Override
@@ -451,34 +435,44 @@ public class MainActivity extends AppCompatActivity {
         invalidateOptionsMenu();
         startSplitButton.setText(R.string.startText);
         if (timer != null) {
-            timer.interrupt();
+            timer.stopTimer();
             timer.setMs(0L);
         }
     }
 
-    void getTimeInMs(NetworkResponseListener listener) {
-        new Network(listener).execute(ip.getHostAddress(), "" + port, LiveSplitCommand.GETTIME.toString(), Boolean.toString(true));
+    void getTimeInMs(final NetworkResponseListener listener) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new Network(listener).execute(ip.getHostAddress(), "" + port, LiveSplitCommand.GETTIME.toString(), Boolean.toString(true));
+            }
+        });
     }
 
     private void getTimerPhase(final NetworkResponseListener listener) {
-        new Network(new NetworkResponseListener() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onResponse(String response) {
-                if(response != null){
-                    if(response.equals(TimerState.NotRunning.toString())){
-                        timerState = TimerState.NotRunning;
-                    } else if (response.equals(TimerState.Paused.toString())){
-                        timerState = TimerState.Paused;
-                    } else if(response.equals(TimerState.Running.toString())){
-                        timerState = TimerState.Running;
-                    } else if(response.equals(TimerState.Ended.toString())){
-                        timerState = TimerState.Ended;
-                    }
-                }
+            public void run() {
+                new Network(new NetworkResponseListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (response != null) {
+                            if (response.equals(TimerState.NotRunning.toString())) {
+                                timerState = TimerState.NotRunning;
+                            } else if (response.equals(TimerState.Paused.toString())) {
+                                timerState = TimerState.Paused;
+                            } else if (response.equals(TimerState.Running.toString())) {
+                                timerState = TimerState.Running;
+                            } else if (response.equals(TimerState.Ended.toString())) {
+                                timerState = TimerState.Ended;
+                            }
+                        }
 
-                listener.onResponse(null);
+                        listener.onResponse(null);
+                    }
+                }).execute(ip.getHostAddress(), "" + port, LiveSplitCommand.GETTIMERSTATE.toString(), Boolean.toString(true));
             }
-        }).execute(ip.getHostAddress(), "" + port, LiveSplitCommand.GETTIMERSTATE.toString(), Boolean.toString(true));
+        });
     }
 
     private void pingServer(final PingListener listener) {
@@ -510,26 +504,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPing(boolean wasReached) {
                 if (wasReached) {
-                    if(checkTimerPhase){
+                    if (checkTimerPhase) {
                         getTimerPhase(new NetworkResponseListener() {
                             @Override
                             public void onResponse(String ignored) {
-                                if (timerState == TimerState.Running) {
-                                    startTimer(false);
-                                } else if(timerState == TimerState.Ended){
-                                    timeFinished();
-                                } else if(timerState == TimerState.Paused){
-                                    invalidateOptionsMenu();
-                                    startSplitButton.setText(R.string.resumeText);
-                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (timerState == TimerState.Running) {
+                                            startTimer(false);
+                                        } else if (timerState == TimerState.Ended) {
+                                            timeFinished();
+                                        } else if (timerState == TimerState.Paused) {
+                                            invalidateOptionsMenu();
+                                            startSplitButton.setText(R.string.resumeText);
+                                        }
+                                    }
+                                });
 
                                 getTimeInMs(new NetworkResponseListener() {
                                     @Override
                                     public void onResponse(String response) {
                                         if (response != null) {
-                                            if(timer == null){
-                                                timer = new Timer(timerText, MainActivity.this);
-                                            }
                                             timer.setMs(response);
                                         }
                                     }
@@ -550,8 +546,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void timeFinished() {
-        if(timer != null){
-            timer.interrupt();
+        if (timer != null) {
+            timer.stopTimer();
 
             getTimeInMs(new NetworkResponseListener() {
                 @Override

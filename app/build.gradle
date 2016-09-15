@@ -8,8 +8,8 @@ android {
         applicationId "de.ekelbatzen.livesplit.remote"
         minSdkVersion 9
         targetSdkVersion 24
-        versionCode 3
-        versionName "0.1.1"
+        versionCode 4
+        versionName "0.1.2"
     }
     buildTypes {
         release {
@@ -17,9 +17,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dexOptions {
+        incremental false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:24.2.1'
 }
