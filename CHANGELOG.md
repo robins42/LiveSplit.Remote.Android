@@ -24,3 +24,7 @@
 - Timer now updates every frame when running
 - Timer synchronization rate increased: 10s -> 3s
 - Improved thread protocol execution for older android versions
+
+0.1.3:
+- Fixed a crash when onResume was called before onCreate
+- Adjusted timer placeholder to 2 decimal digits
