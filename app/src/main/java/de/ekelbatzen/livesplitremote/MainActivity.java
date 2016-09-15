@@ -337,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                info.setText(getString(R.string.serverIpNotSet));
                                 Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG).show();
                             }
                         });

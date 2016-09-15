@@ -15,3 +15,6 @@
 - Reduced network command timeout to 3 seconds
 - Added LiveSplit logo in toolbar
 - A lot of small improvements
+
+0.1.1:
+- Fixed minor text bug
