@@ -230,16 +230,7 @@ public class MainActivity extends AppCompatActivity {
             timer.start();
         }
 
-        if(ip != null){
-            getTimeInMs(new NetworkResponseListener() {
-                @Override
-                public void onResponse(String response) {
-                    if (response != null) {
-                        timer.setMs(response);
-                    }
-                }
-            });
-        }
+        synchronizeTimer();
     }
 
     private void setIP() {
@@ -398,14 +389,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        getTimeInMs(new NetworkResponseListener() {
-            @Override
-            public void onResponse(String response) {
-                if (response != null) {
-                    timer.setMs(response);
-                }
-            }
-        });
+        synchronizeTimer();
     }
 
     private void skipSplit() {
@@ -420,14 +404,7 @@ public class MainActivity extends AppCompatActivity {
         if (timer != null) {
             timer.stopTimer();
         }
-        getTimeInMs(new NetworkResponseListener() {
-            @Override
-            public void onResponse(String response) {
-                if (response != null) {
-                    timer.setMs(response);
-                }
-            }
-        });
+        synchronizeTimer();
     }
 
     private void resetTimer() {
@@ -445,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void getTimeInMs(final NetworkResponseListener listener) {
+    private void getTimeInMs(final NetworkResponseListener listener) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -527,14 +504,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                getTimeInMs(new NetworkResponseListener() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        if (response != null) {
-                                            timer.setMs(response);
-                                        }
-                                    }
-                                });
+                                synchronizeTimer();
                             }
                         });
                     }
@@ -554,19 +524,35 @@ public class MainActivity extends AppCompatActivity {
         if (timer != null) {
             timer.stopTimer();
 
-            getTimeInMs(new NetworkResponseListener() {
-                @Override
-                public void onResponse(String response) {
-                    if (response != null) {
-                        timer.setMs(response);
-                    }
-                }
-            });
+            synchronizeTimer();
         }
 
         startSplitButton.setText(R.string.timeFinishedText);
         startSplitButton.setEnabled(false);
         skipButton.setEnabled(false);
         pauseButton.setEnabled(false);
+    }
+
+    void synchronizeTimer() {
+        if (ip != null) {
+            getTimeInMs(new NetworkResponseListener() {
+                @Override
+                public void onResponse(String response) {
+                    if (response != null) {
+                        if (!response.equals("0.00")) {
+                            timer.setMs(response);
+                        } else {
+                            // Bug on LiveSplit server when using game time comparison, ignore synchronization until fixed
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, R.string.gameTimeBug, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
     }
 }

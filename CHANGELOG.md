@@ -33,3 +33,6 @@
 - Fixed LiveSplit milliseconds being parsed wrong on some devices
 - Screen should now stay awake
 - Fixed timer stopping when closing and reopening app when server is not reachable
+
+0.1.5:
+- Added workaround and info toast for the 0.00 game time bug

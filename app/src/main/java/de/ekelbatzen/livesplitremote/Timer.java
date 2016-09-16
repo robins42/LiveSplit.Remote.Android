@@ -7,8 +7,6 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
-import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
-
 @SuppressWarnings("HardCodedStringLiteral")
 public class Timer extends TextView {
     private static final long MS_BETWEEN_POLLS = 3000L;
@@ -57,14 +55,7 @@ public class Timer extends TextView {
             setText(msToTimeformat());
 
             if (System.currentTimeMillis() - lastPoll > MS_BETWEEN_POLLS && act != null) {
-                act.getTimeInMs(new NetworkResponseListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        if (response != null) {
-                            setMs(response);
-                        }
-                    }
-                });
+                act.synchronizeTimer();
                 lastPoll = System.currentTimeMillis();
             }
 
@@ -102,7 +93,7 @@ public class Timer extends TextView {
             minutes = Long.parseLong(parts[0]);
         }
 
-        String[] secondsAndMs = parts[parts.length-1].split("\\.");
+        String[] secondsAndMs = parts[parts.length - 1].split("\\.");
         seconds = Long.parseLong(secondsAndMs[0]);
         ms = Long.parseLong(secondsAndMs[1] + '0'); // Fixing the things SimpleDateFormat does wrong on some phones
 

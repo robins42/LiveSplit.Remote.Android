@@ -27,4 +27,5 @@
     <string name="timerPhase">Check timer phase</string>
     <string name="timerphaseHint">This feature is very new, the default server may not support this yet, leading to a 3 second timeout delay.</string>
     <string name="timeFinishedText">Time!</string>
+    <string name="gameTimeBug">Can\'t synchronize game time while game is not running.</string>
 </resources>
