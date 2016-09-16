@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayUseLogoEnabled(true);
         }
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         timerState = TimerState.NotRunning;
 
         info = (TextView) findViewById(R.id.text_warnings);
@@ -224,15 +226,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        if (timerState == TimerState.Running) {
+            timer.start();
+        }
+
         if(ip != null){
             getTimeInMs(new NetworkResponseListener() {
                 @Override
                 public void onResponse(String response) {
                     if (response != null) {
                         timer.setMs(response);
-                        if (timerState == TimerState.Running) {
-                            timer.start();
-                        }
                     }
                 }
             });

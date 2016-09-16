@@ -28,3 +28,8 @@
 0.1.3:
 - Fixed a crash when onResume was called before onCreate
 - Adjusted timer placeholder to 2 decimal digits
+
+0.1.4:
+- Fixed LiveSplit milliseconds being parsed wrong on some devices
+- Screen should now stay awake
+- Fixed timer stopping when closing and reopening app when server is not reachable
