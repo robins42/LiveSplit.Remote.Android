@@ -2,7 +2,6 @@
     <string name="app_name">LiveSplit Remote</string>
     <string name="pref_id" type="id">Livesplit_Remote</string>
     <string name="settingsIdIp">IP</string>
-    <string name="settingsIdTimerphase">checkTimerPhase</string>
 
     <string name="serverIpNotSet">Server IP has not been set yet.</string>
     <string name="buttonSetIp">Set LiveSplit Server IP</string>
@@ -11,9 +10,10 @@
     <string name="setIpDialogConfirm">OK</string>
     <string name="ipParseError">Error reading saved IP</string>
     <string name="ipSyntaxError">IP syntax is not valid</string>
-    <string name="pingIp">Pinging %1$s …</string>
     <string name="ipNotReached">Server unavailable.\nHave you configured it in the layout\nand started it via Control > Start Server?</string>
-    <string name="displayIp">Server IP is set to %1$s</string>
+    <string name="ipNotReachedInfo">Server unavailable at %1$s:%2$d.</string>
+    <string name="displayIp">Connected to %1$s:%2$d.</string>
+    <string name="pingingIp">Contacting %1$s:%2$d …</string>
 
     <string name="timerPlaceholder">00:00:00.00</string>
     <string name="startTimer">Start</string>
@@ -22,10 +22,8 @@
     <string name="pauseTimer">Pause</string>
     <string name="resetTimer">Reset timer</string>
     <string name="splitText">Split</string>
-    <string name="resumeText">Resume Timer</string>
-    <string name="startText">Start Timer</string>
-    <string name="timerPhase">Check timer phase</string>
-    <string name="timerphaseHint">This feature is very new, the default server may not support this yet, leading to a 3 second timeout delay.</string>
+    <string name="resumeText">Resume</string>
     <string name="timeFinishedText">Time!</string>
     <string name="gameTimeBug">Can\'t synchronize game time while game is not running.</string>
+    <string name="outdatedServer">Your LiveSplit server may be outdated.\nPlease use the newest version or this app won\'t work properly.</string>
 </resources>

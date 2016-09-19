@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
@@ -17,29 +18,28 @@ import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 @SuppressWarnings("HardCodedStringLiteral")
 public class Network extends AsyncTask<String, String, String> {
     private final NetworkResponseListener listener;
-
-    public Network() {
-        this.listener = null;
-    }
+    private boolean cmdSuccessful;
+    private static final int TIMEOUT_MS = 3000;
 
     public Network(NetworkResponseListener listener) {
         this.listener = listener;
     }
 
     @Override
-    protected String doInBackground(String... args) {
-        Log.w("Network", "Sending " + args[2] + " to " + args[0] + ':' + args[1]);
+    protected String doInBackground(String... params) {
+        Log.v("Network", "Sending " + params[2] + " to " + params[0] + ':' + params[1]);
+        cmdSuccessful = false;
         InetAddress ip = null;
         try {
-            ip = InetAddress.getByName(args[0]);
+            ip = InetAddress.getByName(params[0]);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        int port = Integer.parseInt(args[1]);
-        String cmd = args[2];
+        int port = Integer.parseInt(params[1]);
+        String cmd = params[2];
         boolean listenForResponse = false;
-        if (args.length > 3) {
-            listenForResponse = Boolean.parseBoolean(args[3]);
+        if (params.length > 3) {
+            listenForResponse = Boolean.parseBoolean(params[3]);
         }
 
         String response = null;
@@ -49,8 +49,8 @@ public class Network extends AsyncTask<String, String, String> {
 
         try {
             socket = new Socket();
-            socket.setSoTimeout(3000);
-            socket.connect(new InetSocketAddress(ip, port), 3000);
+            socket.setSoTimeout(TIMEOUT_MS);
+            socket.connect(new InetSocketAddress(ip, port), TIMEOUT_MS);
             osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
             br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
             osw.write(cmd + "\r\n");
@@ -58,6 +58,10 @@ public class Network extends AsyncTask<String, String, String> {
             if (listenForResponse) {
                 response = br.readLine();
             }
+            cmdSuccessful = true;
+        } catch (SocketTimeoutException e) {
+            // Just print the short timeout message without printing stacktrace, not necessary to spam logcat
+            Log.w("Network", "Got an exception trying to send " + cmd + " to " + ip + ':' + port + " - " + e.getMessage());
         } catch (Exception e) {
             Log.w("Network", "Got an exception trying to send " + cmd + " to " + ip + ':' + port);
             e.printStackTrace();
@@ -91,9 +95,13 @@ public class Network extends AsyncTask<String, String, String> {
     }
 
     @Override
-    protected void onPostExecute(String response) {
+    protected void onPostExecute(String result) {
         if (listener != null) {
-            listener.onResponse(response);
+            if (cmdSuccessful) {
+                listener.onResponse(result);
+            } else {
+                listener.onError();
+            }
         }
     }
 }

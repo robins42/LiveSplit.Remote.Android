@@ -22,28 +22,34 @@ import java.net.UnknownHostException;
 
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
-import de.ekelbatzen.livesplitremote.model.PingListener;
+import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PollUpdateListener {
     private static int port = 16834; //I know, hardcoding is bad, will be implemented when I have time
     private String tempIpFromDialog;
     private InetAddress ip;
     private TimerState timerState;
     private TextView info;
     private Button startSplitButton;
+    private Button undoButton;
     private Button skipButton;
     private Button pauseButton;
     private Timer timer;
-    private boolean checkTimerPhase;
+    private Poller poller;
+    private NetworkResponseListener defaultCommandListener;
+    private long timestampLastOfflineToast;
+    private static final long OFFLINE_TOAST_COOLDOWN_MS = 10000L;
+    private Toast offlineToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Print any unexpected exceptions to a toast before crashing
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
-            public void uncaughtException(Thread thread, final Throwable e) {
+            public void uncaughtException(Thread t, final Throwable e) {
                 e.printStackTrace();
 
                 new Thread() {
@@ -76,28 +82,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        timerState = TimerState.NotRunning;
+        timerState = TimerState.ERROR;
 
         info = (TextView) findViewById(R.id.text_warnings);
         startSplitButton = (Button) findViewById(R.id.startSplitButton);
-        Button undoButton = (Button) findViewById(R.id.undoButton);
+        undoButton = (Button) findViewById(R.id.undoButton);
         skipButton = (Button) findViewById(R.id.skipButton);
         pauseButton = (Button) findViewById(R.id.pauseButton);
         timer = (Timer) findViewById(R.id.timer);
-        timer.setActivity(this);
 
-        String savedIP = getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).getString(getString(R.string.settingsIdIp), null);
-        checkTimerPhase = getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).getBoolean(getString(R.string.settingsIdTimerphase), false);
-        if (savedIP != null) {
-            try {
-                ip = InetAddress.getByName(savedIP);
-                info.setText(getString(R.string.displayIp, ip.getHostAddress()));
-                readAllFromServer();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-                Toast.makeText(MainActivity.this, R.string.ipParseError, Toast.LENGTH_SHORT).show();
-            }
-        }
+        updateGuiToTimerstate();
 
         startSplitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,12 +104,12 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        if (timerState == TimerState.NotRunning) {
-                            startTimer(true);
-                        } else if (timerState == TimerState.Paused) {
-                            resumeTimer();
-                        } else if (timerState == TimerState.Running) {
-                            split();
+                        if (timerState == TimerState.NOT_RUNNING) {
+                            sendCommand(LiveSplitCommand.START);
+                        } else if (timerState == TimerState.PAUSED) {
+                            sendCommand(LiveSplitCommand.RESUME);
+                        } else if (timerState == TimerState.RUNNING) {
+                            sendCommand(LiveSplitCommand.SPLIT);
                         }
                     }
                 });
@@ -133,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        undoSplit();
+                        sendCommand(LiveSplitCommand.UNDO);
                     }
                 });
             }
@@ -150,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        skipSplit();
+                        sendCommand(LiveSplitCommand.SKIP);
                     }
                 });
             }
@@ -167,11 +161,41 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        pauseTimer();
+                        sendCommand(LiveSplitCommand.PAUSE);
                     }
                 });
             }
         });
+
+        String savedIP = getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).getString(getString(R.string.settingsIdIp), null);
+        if (savedIP != null) {
+            try {
+                ip = InetAddress.getByName(savedIP);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this, R.string.ipParseError, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        defaultCommandListener = new NetworkResponseListener() {
+            @Override
+            public void onResponse(String response) {
+                poller.instantPoll();
+            }
+
+            @Override
+            public void onError() {
+                onServerWentOffline();
+            }
+        };
+
+        if(poller == null){
+            poller = new Poller(this);
+            if(ip != null){
+                poller.setIp(ip, port);
+            }
+            poller.startPolling();
+        }
     }
 
     @Override
@@ -183,9 +207,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.getItem(0).setEnabled(timerState == TimerState.NotRunning);
-        menu.getItem(1).setChecked(checkTimerPhase);
-        menu.getItem(2).setEnabled(ip != null);
+        menu.getItem(1).setEnabled(ip != null && timerState != TimerState.ERROR);
 
         return true;
     }
@@ -196,29 +218,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_ip:
                 setIP();
                 return true;
-            case R.id.menu_timerphase:
-                checkTimerPhase = !checkTimerPhase;
-                item.setChecked(checkTimerPhase);
-                if (checkTimerPhase) {
-                    Toast.makeText(this, R.string.timerphaseHint, Toast.LENGTH_LONG).show();
-                }
-                getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).edit().putBoolean(getString(R.string.settingsIdTimerphase), checkTimerPhase).apply();
-                return true;
             case R.id.menu_resettimer:
-                resetTimer();
+                sendCommand(LiveSplitCommand.RESET);
                 return true;
-//            case R.id.menu_crash:
-//                throw new NullPointerException("This is a test");
             default:
                 return false;
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (timer != null) {
-            timer.stopTimer();
         }
     }
 
@@ -226,11 +230,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (timerState == TimerState.Running) {
-            timer.start();
+        if (poller != null) {
+            poller.stopPolling();
+            poller = null;
         }
+        poller = new Poller(this);
+        poller.setIp(ip, port);
+        poller.startPolling();
 
-        synchronizeTimer();
+        updateGuiToTimerstate();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (timer != null) {
+            timer.stop();
+        }
+        if (poller != null) {
+            poller.stopPolling();
+            poller = null;
+        }
     }
 
     private void setIP() {
@@ -258,301 +278,173 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
                 final String input = inputField.getText().toString();
 
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            ip = InetAddress.getByName(input);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    info.setText(getString(R.string.pingIp, ip.getHostAddress()));
-                                }
-                            });
-
-                            pingServer(new PingListener() {
-                                @Override
-                                public void onPing(boolean wasReached) {
-                                    if (wasReached) {
-                                        tempIpFromDialog = null;
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                info.setText(getString(R.string.displayIp, ip.getHostAddress()));
-                                                getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).edit().putString(getString(R.string.settingsIdIp), input).apply();
-                                            }
-                                        });
-                                        readAllFromServer();
-                                    } else {
-                                        tempIpFromDialog = input;
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                info.setText(getString(R.string.serverIpNotSet));
-                                                Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG).show();
-                                                setIP();
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                        } catch (UnknownHostException e) {
-                            tempIpFromDialog = input;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    info.setText(getString(R.string.serverIpNotSet));
-                                    Toast.makeText(MainActivity.this, R.string.ipSyntaxError, Toast.LENGTH_SHORT).show();
-                                    setIP();
-                                }
-                            });
+                try {
+                    ip = InetAddress.getByName(input);
+                    poller.setIp(ip, port);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSharedPreferences(getString(R.string.pref_id), Activity.MODE_PRIVATE).edit().putString(getString(R.string.settingsIdIp), input).apply();
                         }
-                    }
-                }.start();
+                    });
+                } catch (UnknownHostException ignored) {
+                    tempIpFromDialog = input;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, R.string.ipSyntaxError, Toast.LENGTH_SHORT).show();
+                            setIP();
+                        }
+                    });
+                }
             }
         });
 
         builder.show();
     }
 
-    private void startTimer(boolean checkFirst) {
-        if (checkFirst) {
-            pingServer(new PingListener() {
-                @Override
-                public void onPing(final boolean wasReached) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (wasReached) {
-                                new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.START.toString());
-                                timerState = TimerState.Running;
-                                startSplitButton.setText(R.string.splitText);
-                                invalidateOptionsMenu();
-                                timer.start();
-                            } else {
-                                Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                }
-            });
+    private void sendCommand(LiveSplitCommand cmd) {
+        new Network(defaultCommandListener).execute(ip.getHostAddress(), "" + port, cmd.toString(), Boolean.toString(false));
+    }
+
+    @Override
+    public void onStateChanged(TimerState newState) {
+        timerState = newState;
+
+        if (newState == TimerState.RUNNING) {
+            timer.start();
         } else {
-            new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.START.toString());
-            timerState = TimerState.Running;
-            startSplitButton.setText(R.string.splitText);
-            invalidateOptionsMenu();
+            timer.stop();
+        }
+
+        updateGuiToTimerstate();
+    }
+
+    @Override
+    public void onTimeSynchronized(String lsTime) {
+        if (lsTime != null) {
+            if (!lsTime.equals("0.00")) {
+                timer.setMs(lsTime);
+            } else {
+                // Bug on LiveSplit server when using game time comparison, ignore synchronization until fixed
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, R.string.gameTimeBug, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onServerWentOffline() {
+        info.setText(getString(R.string.ipNotReachedInfo, ip.getHostAddress(), port));
+        offlineToast = Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG);
+        offlineToast.show();
+        timerState = TimerState.ERROR;
+        timer.stop();
+        updateGuiToTimerstate();
+    }
+
+    @Override
+    public void onServerWentOnline(TimerState currentState) {
+        info.setText(getString(R.string.displayIp, ip.getHostAddress(), port));
+        timerState = currentState;
+        if(offlineToast != null){
+            offlineToast.cancel();
+        }
+        updateGuiToTimerstate();
+        if(currentState == TimerState.RUNNING){
             timer.start();
         }
     }
 
-    private void split() {
-        new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.SPLIT.toString());
-
-        if (checkTimerPhase) {
-            getTimerPhase(new NetworkResponseListener() {
-                @Override
-                public void onResponse(String ignored) {
-                    if (timerState == TimerState.Ended) {
-                        timeFinished();
-                    }
-                }
-            });
-        }
-    }
-
-    private void resumeTimer() {
-        new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.RESUME.toString());
-        timerState = TimerState.Running;
-        startSplitButton.setText(R.string.splitText);
-        invalidateOptionsMenu();
-        timer.start();
-    }
-
-    private void undoSplit() {
-        new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.UNDO.toString());
-        if (timerState == TimerState.Ended) {
-            startSplitButton.setText(R.string.splitText);
-            timerState = TimerState.Running;
-        }
-        startSplitButton.setEnabled(true);
-        skipButton.setEnabled(true);
-        pauseButton.setEnabled(true);
-
-        if (checkTimerPhase) {
-            getTimerPhase(new NetworkResponseListener() {
-                @Override
-                public void onResponse(String response) {
-                    if (timerState == TimerState.Running) {
-                        timer.start();
-                    }
-                }
-            });
-        }
-
-        synchronizeTimer();
-    }
-
-    private void skipSplit() {
-        new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.SKIP.toString());
-    }
-
-    private void pauseTimer() {
-        new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.PAUSE.toString());
-        timerState = TimerState.Paused;
-        invalidateOptionsMenu();
-        startSplitButton.setText(R.string.resumeText);
-        if (timer != null) {
-            timer.stopTimer();
-        }
-        synchronizeTimer();
-    }
-
-    private void resetTimer() {
-        new Network().execute(ip.getHostAddress(), "" + port, LiveSplitCommand.RESET.toString());
-        timerState = TimerState.NotRunning;
-        startSplitButton.setText(R.string.startText);
-        startSplitButton.setEnabled(true);
-        skipButton.setEnabled(true);
-        pauseButton.setEnabled(true);
-        invalidateOptionsMenu();
-        startSplitButton.setText(R.string.startText);
-        if (timer != null) {
-            timer.stopTimer();
-            timer.setMs(0L);
-        }
-    }
-
-    private void getTimeInMs(final NetworkResponseListener listener) {
+    @Override
+    public void onPollStart() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new Network(listener).execute(ip.getHostAddress(), "" + port, LiveSplitCommand.GETTIME.toString(), Boolean.toString(true));
+                info.setText(getString(R.string.pingingIp, ip.getHostAddress(), port));
             }
         });
     }
 
-    private void getTimerPhase(final NetworkResponseListener listener) {
+    @Override
+    public void onPollEnd() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new Network(new NetworkResponseListener() {
-                    @Override
-                    public void onResponse(String response) {
-                        if (response != null) {
-                            if (response.equals(TimerState.NotRunning.toString())) {
-                                timerState = TimerState.NotRunning;
-                            } else if (response.equals(TimerState.Paused.toString())) {
-                                timerState = TimerState.Paused;
-                            } else if (response.equals(TimerState.Running.toString())) {
-                                timerState = TimerState.Running;
-                            } else if (response.equals(TimerState.Ended.toString())) {
-                                timerState = TimerState.Ended;
-                            }
+                if(ip != null){
+                    if(timerState == TimerState.ERROR){
+                        info.setText(getString(R.string.ipNotReachedInfo, ip.getHostAddress(), port));
+                        if(System.currentTimeMillis() - timestampLastOfflineToast > OFFLINE_TOAST_COOLDOWN_MS){
+                            offlineToast = Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG);
+                            offlineToast.show();
+                            timestampLastOfflineToast = System.currentTimeMillis();
                         }
-
-                        listener.onResponse(null);
-                    }
-                }).execute(ip.getHostAddress(), "" + port, LiveSplitCommand.GETTIMERSTATE.toString(), Boolean.toString(true));
-            }
-        });
-    }
-
-    private void pingServer(final PingListener listener) {
-        final String lastInfoText = info.getText().toString();
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                info.setText(getString(R.string.pingIp, ip.getHostAddress()));
-            }
-        });
-
-        getTimeInMs(new NetworkResponseListener() {
-            @Override
-            public void onResponse(String response) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        info.setText(lastInfoText);
-                    }
-                });
-                listener.onPing(response != null);
-            }
-        });
-    }
-
-    private void readAllFromServer() {
-        pingServer(new PingListener() {
-            @Override
-            public void onPing(boolean wasReached) {
-                if (wasReached) {
-                    if (checkTimerPhase) {
-                        getTimerPhase(new NetworkResponseListener() {
-                            @Override
-                            public void onResponse(String ignored) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (timerState == TimerState.Running) {
-                                            startTimer(false);
-                                        } else if (timerState == TimerState.Ended) {
-                                            timeFinished();
-                                        } else if (timerState == TimerState.Paused) {
-                                            invalidateOptionsMenu();
-                                            startSplitButton.setText(R.string.resumeText);
-                                        }
-                                    }
-                                });
-
-                                synchronizeTimer();
-                            }
-                        });
+                    } else {
+                        info.setText(getString(R.string.displayIp, ip.getHostAddress(), port));
                     }
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    info.setText(R.string.serverIpNotSet);
                 }
             }
         });
     }
 
-    private void timeFinished() {
-        if (timer != null) {
-            timer.stopTimer();
-
-            synchronizeTimer();
+    @Override
+    public void onOutdatedServer() {
+        if(offlineToast != null){
+            offlineToast.cancel();
         }
 
-        startSplitButton.setText(R.string.timeFinishedText);
-        startSplitButton.setEnabled(false);
-        skipButton.setEnabled(false);
-        pauseButton.setEnabled(false);
+        Toast.makeText(MainActivity.this, R.string.outdatedServer, Toast.LENGTH_LONG).show();
     }
 
-    void synchronizeTimer() {
-        if (ip != null) {
-            getTimeInMs(new NetworkResponseListener() {
-                @Override
-                public void onResponse(String response) {
-                    if (response != null) {
-                        if (!response.equals("0.00")) {
-                            timer.setMs(response);
-                        } else {
-                            // Bug on LiveSplit server when using game time comparison, ignore synchronization until fixed
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(MainActivity.this, R.string.gameTimeBug, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
+    private void updateGuiToTimerstate() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (timerState) {
+                    case NOT_RUNNING:
+                        startSplitButton.setEnabled(true);
+                        undoButton.setEnabled(false);
+                        skipButton.setEnabled(false);
+                        pauseButton.setEnabled(false);
+                        startSplitButton.setText(R.string.startTimer);
+                        break;
+                    case RUNNING:
+                        startSplitButton.setEnabled(true);
+                        undoButton.setEnabled(true);
+                        skipButton.setEnabled(true);
+                        pauseButton.setEnabled(true);
+                        startSplitButton.setText(R.string.splitText);
+                        break;
+                    case ENDED:
+                        startSplitButton.setEnabled(false);
+                        undoButton.setEnabled(true);
+                        skipButton.setEnabled(false);
+                        pauseButton.setEnabled(false);
+                        startSplitButton.setText(R.string.timeFinishedText);
+                        break;
+                    case PAUSED:
+                        startSplitButton.setEnabled(true);
+                        undoButton.setEnabled(true);
+                        skipButton.setEnabled(true);
+                        pauseButton.setEnabled(false);
+                        startSplitButton.setText(R.string.resumeText);
+                        break;
+                    case ERROR:
+                        startSplitButton.setEnabled(false);
+                        undoButton.setEnabled(false);
+                        skipButton.setEnabled(false);
+                        pauseButton.setEnabled(false);
+                        break;
                 }
-            });
-        }
+
+                invalidateOptionsMenu();
+            }
+        });
     }
 }

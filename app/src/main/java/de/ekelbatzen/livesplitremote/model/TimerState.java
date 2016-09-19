@@ -1,5 +1,21 @@
 package de.ekelbatzen.livesplitremote.model;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public enum TimerState {
-    NotRunning, Running, Ended, Paused
+    NOT_RUNNING("NotRunning"),
+    RUNNING("Running"),
+    ENDED("Ended"),
+    PAUSED("Paused"),
+    ERROR("Error");
+
+    private final String lsName;
+
+    TimerState(String lsName){
+        this.lsName = lsName;
+    }
+
+    @Override
+    public String toString() {
+        return lsName;
+    }
 }

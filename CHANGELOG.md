@@ -36,3 +36,9 @@
 
 0.1.5:
 - Added workaround and info toast for the 0.00 game time bug
+
+0.2.0:
+- App is now dependent on the new server version to get timer phase
+- Improved dynamic timer phase behavior and polling
+- Improved error handling
+- Some refactoring

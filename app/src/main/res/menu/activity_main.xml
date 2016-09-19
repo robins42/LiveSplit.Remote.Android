@@ -8,18 +8,7 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/menu_timerphase"
-        android:checkable="true"
-        android:title="@string/timerPhase"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/menu_resettimer"
         android:title="@string/resetTimer"
         app:showAsAction="never" />
-
-    <!--<item-->
-    <!--android:id="@+id/menu_crash"-->
-    <!--android:title="CRASH APP"-->
-    <!--app:showAsAction="never" />-->
 </menu>

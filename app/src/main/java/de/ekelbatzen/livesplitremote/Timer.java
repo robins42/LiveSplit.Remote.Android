@@ -9,12 +9,9 @@ import java.util.Locale;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class Timer extends TextView {
-    private static final long MS_BETWEEN_POLLS = 3000L;
     private long ms;
-    private long lastPoll;
     private boolean running;
     private long lastTick;
-    private MainActivity act;
 
     public Timer(Context context) {
         super(context);
@@ -37,7 +34,7 @@ public class Timer extends TextView {
         lastTick = System.currentTimeMillis();
     }
 
-    public void stopTimer() {
+    public void stop() {
         running = false;
     }
 
@@ -54,11 +51,6 @@ public class Timer extends TextView {
             lastTick = System.currentTimeMillis();
             setText(msToTimeformat());
 
-            if (System.currentTimeMillis() - lastPoll > MS_BETWEEN_POLLS && act != null) {
-                act.synchronizeTimer();
-                lastPoll = System.currentTimeMillis();
-            }
-
             super.onDraw(canvas);
             invalidate();
         } else {
@@ -66,13 +58,8 @@ public class Timer extends TextView {
         }
     }
 
-    public void setActivity(MainActivity act) {
-        this.act = act;
-    }
-
-    public void setMs(long ms) {
+    private void setMs(long ms) {
         this.ms = ms;
-        lastPoll = System.currentTimeMillis();
         setText(msToTimeformat());
     }
 
@@ -81,7 +68,7 @@ public class Timer extends TextView {
         long hours = 0L;
         long minutes;
         long seconds;
-        long ms;
+        long millis;
 
         if (parts.length > 2) {
             // HHH…:mm:ss.SS
@@ -95,9 +82,11 @@ public class Timer extends TextView {
 
         String[] secondsAndMs = parts[parts.length - 1].split("\\.");
         seconds = Long.parseLong(secondsAndMs[0]);
-        ms = Long.parseLong(secondsAndMs[1] + '0'); // Fixing the things SimpleDateFormat does wrong on some phones
 
-        long totalMs = (hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L) + (seconds * 1000L) + ms;
+        //noinspection StringConcatenationMissingWhitespace
+        millis = Long.parseLong(secondsAndMs[1] + '0'); // Fixing the things SimpleDateFormat does wrong on some phones
+
+        long totalMs = (hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L) + (seconds * 1000L) + millis;
         setMs(totalMs);
     }
 
