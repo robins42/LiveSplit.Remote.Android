@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pollingDelaysReadable">
+        <item>1 s</item>
+        <item>2 s [Default]</item>
+        <item>3 s</item>
+        <item>4 s</item>
+        <item>5 s</item>
+        <item>10 s</item>
+        <item>15 s</item>
+        <item>20 s</item>
+        <item>30 s</item>
+        <item>40 s</item>
+        <item>50 s</item>
+        <item>60 s</item>
+    </string-array>
+
+    <string-array name="pollingDelaysSystem">
+        <item>1 s</item>
+        <item>2 s</item>
+        <item>3 s</item>
+        <item>4 s</item>
+        <item>5 s</item>
+        <item>10 s</item>
+        <item>15 s</item>
+        <item>20 s</item>
+        <item>30 s</item>
+        <item>40 s</item>
+        <item>50 s</item>
+        <item>60 s</item>
+    </string-array>
+
+    <string-array name="networkTimeoutsReadable">
+        <item>1 s</item>
+        <item>2 s</item>
+        <item>3 s [Default]</item>
+        <item>4 s</item>
+        <item>5 s</item>
+        <item>6 s</item>
+        <item>7 s</item>
+        <item>8 s</item>
+        <item>9 s</item>
+        <item>10 s</item>
+        <item>11 s</item>
+        <item>12 s</item>
+        <item>13 s</item>
+        <item>14 s</item>
+        <item>15 s</item>
+    </string-array>
+
+    <string-array name="networkTimeoutsSystem">
+        <item>1 s</item>
+        <item>2 s</item>
+        <item>3 s</item>
+        <item>4 s</item>
+        <item>5 s</item>
+        <item>6 s</item>
+        <item>7 s</item>
+        <item>8 s</item>
+        <item>9 s</item>
+        <item>10 s</item>
+        <item>11 s</item>
+        <item>12 s</item>
+        <item>13 s</item>
+        <item>14 s</item>
+        <item>15 s</item>
+    </string-array>
+</resources>

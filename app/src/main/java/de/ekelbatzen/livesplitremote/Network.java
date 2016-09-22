@@ -11,15 +11,16 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class Network extends AsyncTask<String, String, String> {
+    public static InetAddress ip;
+    public static int port = 16834;
+    public static int timeoutMs = 3000;
     private final NetworkResponseListener listener;
     private boolean cmdSuccessful;
-    private static final int TIMEOUT_MS = 3000;
 
     public Network(NetworkResponseListener listener) {
         this.listener = listener;
@@ -27,19 +28,12 @@ public class Network extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        Log.v("Network", "Sending " + params[2] + " to " + params[0] + ':' + params[1]);
+        Log.v("Network", "Sending " + params[0] + " to " + ip.getHostAddress() + ':' + port);
         cmdSuccessful = false;
-        InetAddress ip = null;
-        try {
-            ip = InetAddress.getByName(params[0]);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        int port = Integer.parseInt(params[1]);
-        String cmd = params[2];
+        String cmd = params[0];
         boolean listenForResponse = false;
-        if (params.length > 3) {
-            listenForResponse = Boolean.parseBoolean(params[3]);
+        if (params.length > 1) {
+            listenForResponse = Boolean.parseBoolean(params[1]);
         }
 
         String response = null;
@@ -49,8 +43,8 @@ public class Network extends AsyncTask<String, String, String> {
 
         try {
             socket = new Socket();
-            socket.setSoTimeout(TIMEOUT_MS);
-            socket.connect(new InetSocketAddress(ip, port), TIMEOUT_MS);
+            socket.setSoTimeout(timeoutMs);
+            socket.connect(new InetSocketAddress(ip, port), timeoutMs);
             osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
             br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
             osw.write(cmd + "\r\n");

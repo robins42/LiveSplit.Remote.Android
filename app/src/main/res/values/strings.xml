@@ -1,19 +1,30 @@
 <resources>
     <string name="app_name">LiveSplit Remote</string>
-    <string name="pref_id" type="id">Livesplit_Remote</string>
+    <string name="menuSettings">Settings</string>
     <string name="settingsIdIp">IP</string>
+    <string name="settingsIdPort">Port</string>
+    <string name="settingsIdPolldelay">PollDelay</string>
+    <string name="settingsIdTimeout">Timeout</string>
+    <string name="defaultPrefPolling">2 s</string>
+    <string name="defaultPrefTimeout">3 s</string>
+    <string name="defaltPrefPort">16834</string>
 
     <string name="serverIpNotSet">Server IP has not been set yet.</string>
-    <string name="buttonSetIp">Set LiveSplit Server IP</string>
-    <string name="setIpInputHint">LiveSplit Server IP here</string>
-    <string name="setIpDialogCancel">Cancel</string>
-    <string name="setIpDialogConfirm">OK</string>
     <string name="ipParseError">Error reading saved IP</string>
+    <string name="portParseError">Error reading saved port</string>
+    <string name="pollingParseError">Error reading saved polling delay setting</string>
+    <string name="timeoutParseError">Error reading saved network timeout setting</string>
     <string name="ipSyntaxError">IP syntax is not valid</string>
+    <string name="portSyntaxError">Port %1$s is not valid</string>
     <string name="ipNotReached">Server unavailable.\nHave you configured it in the layout\nand started it via Control > Start Server?</string>
     <string name="ipNotReachedInfo">Server unavailable at %1$s:%2$d.</string>
     <string name="displayIp">Connected to %1$s:%2$d.</string>
     <string name="pingingIp">Contacting %1$s:%2$d …</string>
+    <string name="gameTimeBug">Can\'t synchronize game time while game is not running.</string>
+    <string name="outdatedServer">Your LiveSplit server may be outdated.\nPlease use the newest version or this app won\'t work properly.</string>
+
+    <string name="prefPollingSummary">Time between automatic updates.\nLower values may drain your battery faster.</string>
+    <string name="prefTimeoutSummary">Time to wait until deciding that something went wrong</string>
 
     <string name="timerPlaceholder">00:00:00.00</string>
     <string name="startTimer">Start</string>
@@ -24,6 +35,9 @@
     <string name="splitText">Split</string>
     <string name="resumeText">Resume</string>
     <string name="timeFinishedText">Time!</string>
-    <string name="gameTimeBug">Can\'t synchronize game time while game is not running.</string>
-    <string name="outdatedServer">Your LiveSplit server may be outdated.\nPlease use the newest version or this app won\'t work properly.</string>
+
+    <string name="menuInfo">Infos</string>
+    <string name="infosTitle">Infos</string>
+    <string name="infosCancel">OK</string>
+    <string name="infosMsg">This is a remote for the timer program <a href="https://github.com/LiveSplit/LiveSplit">LiveSplit</a>.\n\nIn order to work you need to add\n<b>Control > LiveSplit Server</b> to your layout and then start the server on the main window with\n<b>Rightclick > Control > Start Server</b>.\n\nDevelopment continues on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android">GitHub</a>.</string>
 </resources>

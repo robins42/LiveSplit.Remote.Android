@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Server">
+        <EditTextPreference
+            android:key="@string/settingsIdIp"
+            android:persistent="true"
+            android:title="IP" />
+
+        <EditTextPreference
+            android:defaultValue="16834"
+            android:key="@string/settingsIdPort"
+            android:persistent="true"
+            android:title="Port" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Advanced settings">
+        <ListPreference
+            android:defaultValue="2 s"
+            android:entries="@array/pollingDelaysReadable"
+            android:entryValues="@array/pollingDelaysSystem"
+            android:key="@string/settingsIdPolldelay"
+            android:persistent="true"
+            android:summary="@string/prefPollingSummary"
+            android:title="Polling delay" />
+
+        <ListPreference
+            android:defaultValue="3 s"
+            android:entries="@array/networkTimeoutsReadable"
+            android:entryValues="@array/networkTimeoutsSystem"
+            android:key="@string/settingsIdTimeout"
+            android:persistent="true"
+            android:summary="@string/prefTimeoutSummary"
+            android:title="Network timeout" />
+    </PreferenceCategory>
+</PreferenceScreen>

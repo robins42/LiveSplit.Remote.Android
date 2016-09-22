@@ -42,3 +42,7 @@
 - Improved dynamic timer phase behavior and polling
 - Improved error handling
 - Some refactoring
+
+0.3.0:
+- Added settings
+- Added info dialog
