@@ -59,8 +59,8 @@ public class SettingsActivity extends PreferenceActivity {
                         @Override
                         public void run() {
                             try {
-                                Network.ip = InetAddress.getByName(input);
-                                Log.v("Test", "ip has been updated to " + Network.ip.getHostAddress());
+                                Network.setIp(InetAddress.getByName(input));
+                                Log.v("Test", "ip has been updated to " + Network.getIp().getHostAddress());
                                 lastIp = input;
                             } catch (UnknownHostException ignored) {
                                 runOnUiThread(new Runnable() {
@@ -83,7 +83,7 @@ public class SettingsActivity extends PreferenceActivity {
                         if(port < 1 || port > 65535){
                             throw new NumberFormatException("Number is out of valid port range");
                         }
-                        Network.port = port;
+                        Network.setPort(port);
                         lastPort = portInput;
                     } catch (NumberFormatException e){
                         Log.v("Test", "setting port to " + lastPort);
@@ -103,7 +103,7 @@ public class SettingsActivity extends PreferenceActivity {
                     Poller.pollDelayMs = (long) (1000.0f * Float.parseFloat(pollingDelayStr.split(" ")[0]));
                 } else if (key.equals(getString(R.string.settingsIdTimeout))) {
                     String timeoutStr = sharedPreferences.getString(key, "2 s");
-                    Network.timeoutMs = (int) (1000.0f * Float.parseFloat(timeoutStr.split(" ")[0]));
+                    Network.setTimeoutMs((int) (1000.0f * Float.parseFloat(timeoutStr.split(" ")[0])));
                 }
 
                 updatePreferenceSummaryTexts();

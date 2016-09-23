@@ -16,9 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private Button undoButton;
     private Button skipButton;
     private Button pauseButton;
+    private ProgressBar networkIndicator;
     private Timer timer;
     private Poller poller;
     private NetworkResponseListener defaultCommandListener;
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private static final long OFFLINE_TOAST_COOLDOWN_MS = 10000L;
     private Toast offlineToast;
     private boolean isActive;
+    private boolean cmdRequestActive;
+    private boolean pollActive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         skipButton = (Button) findViewById(R.id.skipButton);
         pauseButton = (Button) findViewById(R.id.pauseButton);
         timer = (Timer) findViewById(R.id.timer);
+        networkIndicator = (ProgressBar) findViewById(R.id.networkIndicator);
 
         updateGuiToTimerstate();
 
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (Network.ip == null) {
+                        if (!Network.hasIp()) {
                             Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -122,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (Network.ip == null) {
+                        if (!Network.hasIp()) {
                             Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -139,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (Network.ip == null) {
+                        if (!Network.hasIp()) {
                             Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -156,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (Network.ip == null) {
+                        if (!Network.hasIp()) {
                             Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -172,27 +178,46 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         defaultCommandListener = new NetworkResponseListener() {
             @Override
             public void onResponse(String response) {
+                cmdRequestActive = false;
+                if (!pollActive) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            networkIndicator.setVisibility(View.INVISIBLE);
+
+                        }
+                    });
+                }
                 poller.instantPoll();
             }
 
             @Override
             public void onError() {
+                cmdRequestActive = false;
+                if (!pollActive) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            networkIndicator.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
                 onServerWentOffline();
             }
         };
     }
 
     private void readPreferences() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         final String savedIP = prefs.getString(getString(R.string.settingsIdIp), null);
-        if(savedIP != null){
+        if (savedIP != null) {
             // Network has to be on non-UI thread
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        Network.ip = InetAddress.getByName(savedIP);
+                        Network.setIp(InetAddress.getByName(savedIP));
                     } catch (UnknownHostException ignored) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -205,21 +230,26 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             }.start();
         }
 
-        try{
-            Network.port = Integer.parseInt(prefs.getString(getString(R.string.settingsIdPort), getString(R.string.defaltPrefPort)));
-        } catch (Exception ignored){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, R.string.portParseError, Toast.LENGTH_SHORT).show();
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Network.setPort(Integer.parseInt(prefs.getString(getString(R.string.settingsIdPort), getString(R.string.defaltPrefPort))));
+                } catch (Exception ignored) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, R.string.portParseError, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            });
-        }
+            }
+        }.start();
 
-        try{
+        try {
             String pollingDelayStr = prefs.getString(getString(R.string.settingsIdPolldelay), getString(R.string.defaultPrefPolling));
             Poller.pollDelayMs = (long) (1000.0f * Float.parseFloat(pollingDelayStr.split(" ")[0]));
-        } catch (Exception ignored){
+        } catch (Exception ignored) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -228,10 +258,10 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             });
         }
 
-        try{
+        try {
             String networkTimeoutStr = prefs.getString(getString(R.string.settingsIdTimeout), getString(R.string.defaultPrefTimeout));
-            Network.timeoutMs = (int) (1000.0f * Float.parseFloat(networkTimeoutStr.split(" ")[0]));
-        } catch (Exception ignored){
+            Network.setTimeoutMs((int) (1000.0f * Float.parseFloat(networkTimeoutStr.split(" ")[0])));
+        } catch (Exception ignored) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -250,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.getItem(2).setEnabled(Network.ip != null && timerState != TimerState.ERROR);
+        menu.getItem(2).setEnabled(Network.hasIp() && timerState != TimerState.ERROR);
 
         return true;
     }
@@ -284,6 +314,33 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         poller = new Poller(this);
         poller.startPolling();
 
+        new Thread() {
+            @Override
+            public void run() {
+                cmdRequestActive = true;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        networkIndicator.setVisibility(View.VISIBLE);
+                    }
+                });
+                try {
+                    Network.openConnection();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                cmdRequestActive = false;
+                if (!pollActive) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            networkIndicator.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
+            }
+        }.start();
+
         updateGuiToTimerstate();
     }
 
@@ -299,9 +356,18 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             poller.stopPolling();
             poller = null;
         }
+
+        new Thread(){
+            @Override
+            public void run() {
+                Network.closeConnection();
+            }
+        }.start();
     }
 
     private void sendCommand(LiveSplitCommand cmd) {
+        cmdRequestActive = true;
+        networkIndicator.setVisibility(View.VISIBLE);
         new Network(defaultCommandListener).execute(cmd.toString(), Boolean.toString(false));
     }
 
@@ -337,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
     @Override
     public void onServerWentOffline() {
-        info.setText(getString(R.string.ipNotReachedInfo, Network.ip.getHostAddress(), Network.port));
+        info.setText(getString(R.string.ipNotReachedInfo, Network.getIp().getHostAddress(), Network.getPort()));
         offlineToast = Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG);
         offlineToast.show();
         timerState = TimerState.ERROR;
@@ -347,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
     @Override
     public void onServerWentOnline(TimerState currentState) {
-        info.setText(getString(R.string.displayIp, Network.ip.getHostAddress(), Network.port));
+        info.setText(getString(R.string.displayIp, Network.getIp().getHostAddress(), Network.getPort()));
         timerState = currentState;
         if (offlineToast != null) {
             offlineToast.cancel();
@@ -360,10 +426,11 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
     @Override
     public void onPollStart() {
+        pollActive = true;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                info.setText(getString(R.string.pingingIp, Network.ip.getHostAddress(), Network.port));
+                networkIndicator.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -373,33 +440,39 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (Network.ip != null) {
+                if (Network.hasIp()) {
                     if (timerState == TimerState.ERROR) {
-                        info.setText(getString(R.string.ipNotReachedInfo, Network.ip.getHostAddress(), Network.port));
+                        info.setText(getString(R.string.ipNotReachedInfo, Network.getIp().getHostAddress(), Network.getPort()));
                         if (System.currentTimeMillis() - timestampLastOfflineToast > OFFLINE_TOAST_COOLDOWN_MS && isActive) {
                             offlineToast = Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG);
                             offlineToast.show();
                             timestampLastOfflineToast = System.currentTimeMillis();
                         }
                     } else {
-                        info.setText(getString(R.string.displayIp, Network.ip.getHostAddress(), Network.port));
+                        info.setText(getString(R.string.displayIp, Network.getIp().getHostAddress(), Network.getPort()));
                     }
                 } else {
                     info.setText(R.string.serverIpNotSet);
+                }
+
+                pollActive = false;
+                if (!cmdRequestActive) {
+                    networkIndicator.setVisibility(View.INVISIBLE);
                 }
             }
         });
     }
 
     @Override
-    public void onOutdatedServer() {
-        if (offlineToast != null) {
-            offlineToast.cancel();
-        }
-
-        if(isActive){
-            Toast.makeText(MainActivity.this, R.string.outdatedServer, Toast.LENGTH_LONG).show();
-        }
+    public void onProblem(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(isActive){
+                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void updateGuiToTimerstate() {

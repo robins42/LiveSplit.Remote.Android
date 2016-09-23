@@ -7,5 +7,5 @@ public interface PollUpdateListener {
     void onTimeSynchronized(String lsTime);
     void onPollStart();
     void onPollEnd();
-    void onOutdatedServer();
+    void onProblem(String msg);
 }

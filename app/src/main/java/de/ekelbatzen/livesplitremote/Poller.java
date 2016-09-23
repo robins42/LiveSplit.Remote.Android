@@ -1,25 +1,28 @@
 package de.ekelbatzen.livesplitremote;
 
+import android.util.Log;
+
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
-import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
 
 public class Poller {
     public static long pollDelayMs = 2000L;
-    private final PollUpdateListener listener;
     private boolean ipLastOnline;
     private TimerState lastTimerstate;
     private boolean running;
     private Thread pollingThread;
     private int maybeOutdatedCounter;
+    private int oooCounter; //out of order, lol
+    private final MainActivity act;
 
-    public Poller(PollUpdateListener listener) {
-        this.listener = listener;
+    public Poller(MainActivity act) {
+        this.act = act;
         running = true;
         ipLastOnline = false;
         lastTimerstate = TimerState.ERROR;
         maybeOutdatedCounter = 0;
+        oooCounter = 0;
     }
 
     public void stopPolling() {
@@ -81,8 +84,8 @@ public class Poller {
     }
 
     private void poll(final NetworkResponseListener finishedListener) {
-        if (listener != null && Network.ip != null) {
-            listener.onPollStart();
+        if (act != null && Network.hasIp()) {
+            act.onPollStart();
 
             // First get time to also see if server is available
             new Network(new NetworkResponseListener() {
@@ -95,19 +98,29 @@ public class Poller {
                             maybeOutdatedCounter = 0;
                             TimerState newTimerstate = parseTimerstate(lsTimerphase);
 
-                            if (!ipLastOnline) {
-                                ipLastOnline = true;
-                                listener.onServerWentOnline(newTimerstate);
+                            if (newTimerstate != null) {
+                                oooCounter = 0;
+                                // Received unparsable result, maybe this is a network hiccup where the socket received time instead of timerphase
+                                if (!ipLastOnline) {
+                                    ipLastOnline = true;
+                                    act.onServerWentOnline(newTimerstate);
+                                }
+
+                                if (lastTimerstate != newTimerstate) {
+                                    act.onStateChanged(newTimerstate);
+                                }
+
+                                lastTimerstate = newTimerstate;
+                            } else {
+                                Log.w("Poller", "Received unparsable timerphase response: " + lsTimerphase);
+                                oooCounter++;
+                                if (oooCounter > 3) {
+                                    act.onProblem(act.getString(R.string.networkHiccup));
+                                }
                             }
 
-                            if (lastTimerstate != newTimerstate) {
-                                listener.onStateChanged(newTimerstate);
-                            }
-
-                            lastTimerstate = newTimerstate;
-
-                            listener.onTimeSynchronized(lsTime);
-                            listener.onPollEnd();
+                            act.onTimeSynchronized(lsTime);
+                            act.onPollEnd();
                             finishedListener.onResponse(null);
                         }
 
@@ -116,16 +129,16 @@ public class Poller {
                             // gettimerphase is maybe not supported
                             maybeOutdatedCounter++;
                             if (maybeOutdatedCounter >= 3) {
-                                listener.onOutdatedServer();
+                                act.onProblem(act.getString(R.string.outdatedServer));
                             }
 
                             if (ipLastOnline) {
-                                listener.onServerWentOffline();
+                                act.onServerWentOffline();
                             }
 
-                            listener.onTimeSynchronized(lsTime);
+                            act.onTimeSynchronized(lsTime);
                             ipLastOnline = false;
-                            listener.onPollEnd();
+                            act.onPollEnd();
                             finishedListener.onResponse(null);
                         }
                     }).execute(LiveSplitCommand.GETTIMERSTATE.toString(), Boolean.toString(true));
@@ -135,14 +148,14 @@ public class Poller {
                 public void onError() {
                     if (ipLastOnline) {
                         ipLastOnline = false;
-                        listener.onServerWentOffline();
-                        listener.onPollEnd();
+                        act.onServerWentOffline();
+                        act.onPollEnd();
                         finishedListener.onResponse(null);
                     }
 
                     maybeOutdatedCounter = 0;
                     ipLastOnline = false;
-                    listener.onPollEnd();
+                    act.onPollEnd();
                     finishedListener.onResponse(null);
                 }
             }).execute(LiveSplitCommand.GETTIME.toString(), Boolean.toString(true));

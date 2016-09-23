@@ -19,7 +19,6 @@
     <string name="ipNotReached">Server unavailable.\nHave you configured it in the layout\nand started it via Control > Start Server?</string>
     <string name="ipNotReachedInfo">Server unavailable at %1$s:%2$d.</string>
     <string name="displayIp">Connected to %1$s:%2$d.</string>
-    <string name="pingingIp">Contacting %1$s:%2$d …</string>
     <string name="gameTimeBug">Can\'t synchronize game time while game is not running.</string>
     <string name="outdatedServer">Your LiveSplit server may be outdated.\nPlease use the newest version or this app won\'t work properly.</string>
 
@@ -40,4 +39,5 @@
     <string name="infosTitle">Infos</string>
     <string name="infosCancel">OK</string>
     <string name="infosMsg">This is a remote for the timer program <a href="https://github.com/LiveSplit/LiveSplit">LiveSplit</a>.\n\nIn order to work you need to add\n<b>Control > LiveSplit Server</b> to your layout and then start the server on the main window with\n<b>Rightclick > Control > Start Server</b>.\n\nDevelopment continues on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android">GitHub</a>.</string>
+    <string name="networkHiccup">The network can\'t keep up with the requests and messes up!\nMaybe you need to increase the polling delay.</string>
 </resources>
