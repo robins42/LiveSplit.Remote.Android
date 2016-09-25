@@ -1,10 +1,13 @@
 package de.ekelbatzen.livesplitremote;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +33,8 @@ import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
 
 public class MainActivity extends AppCompatActivity implements PollUpdateListener {
+    private static final long VIBRATION_TIME = 100L;
+    private static final long OFFLINE_TOAST_COOLDOWN_MS = 10000L;
     private TimerState timerState;
     private TextView info;
     private Button startSplitButton;
@@ -41,11 +46,11 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private Poller poller;
     private NetworkResponseListener defaultCommandListener;
     private long timestampLastOfflineToast;
-    private static final long OFFLINE_TOAST_COOLDOWN_MS = 10000L;
     private Toast offlineToast;
     private boolean isActive;
     private boolean cmdRequestActive;
     private boolean pollActive;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             getSupportActionBar().setDisplayUseLogoEnabled(true);
         }
 
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         timerState = TimerState.ERROR;
 
@@ -97,14 +104,17 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         timer = (Timer) findViewById(R.id.timer);
         networkIndicator = (ProgressBar) findViewById(R.id.networkIndicator);
 
+        timer.setActivity(this);
         updateGuiToTimerstate();
 
         startSplitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrate();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        vibrate();
                         if (!Network.hasIp()) {
                             Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
                             return;
@@ -125,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         undoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrate();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -142,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrate();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -159,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vibrate();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -230,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             }.start();
         }
 
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 try {
@@ -295,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 showInfo();
                 return true;
             case R.id.menu_resettimer:
+                vibrate();
                 sendCommand(LiveSplitCommand.RESET);
                 return true;
             default:
@@ -357,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             poller = null;
         }
 
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 Network.closeConnection();
@@ -468,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(isActive){
+                if (isActive) {
                     Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
             }
@@ -542,6 +556,19 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         TextView msg = ((TextView) ad.findViewById(android.R.id.message));
         if (msg != null) {
             msg.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    private void vibrate() {
+        if (vibrator == null) {
+            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        }
+        // Below Android 3.0 getSystemService returns null if no vibrator is available
+        if (vibrator != null) {
+            // hasVibrator check is only available since Android 3.0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && vibrator.hasVibrator()) {
+                vibrator.vibrate(VIBRATION_TIME);
+            }
         }
     }
 }

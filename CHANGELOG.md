@@ -51,3 +51,6 @@
 - Network socket is now reused instead of creating a new one for each request, allowing more frequent and stable polling (maybe)
 - Added progress wheel as network indicator in top right corner, replacing the twitching info text
 - Forgot to update intenal version number for 0.3.0, skipped it to 0.3.1 now
+
+0.3.2:
+- Added vibration

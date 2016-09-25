@@ -18,21 +18,20 @@ public class Timer extends TextView {
 
     public Timer(Context context) {
         super(context);
-        init(context);
+        init();
     }
 
     public Timer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
     public Timer(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
-        act = (MainActivity) context;
+    private void init() {
         oooCounter = 0;
         ms = 0L;
         running = false;
@@ -113,5 +112,9 @@ public class Timer extends TextView {
         String m = String.format(Locale.ENGLISH, "%02d", (allSeconds / 60L) % 60L);
         String h = String.format(Locale.ENGLISH, "%02d", (allSeconds / (60L * 60L)) % 24L);
         return h + ':' + m + ':' + s + '.' + msShort;
+    }
+
+    public void setActivity(MainActivity act){
+        this.act = act;
     }
 }
