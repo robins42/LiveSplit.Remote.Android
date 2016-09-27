@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote;
+package de.ekelbatzen.livesplitremote.gui;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,6 +27,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import de.ekelbatzen.livesplitremote.network.Network;
+import de.ekelbatzen.livesplitremote.network.Poller;
+import de.ekelbatzen.livesplitremote.R;
+import de.ekelbatzen.livesplitremote.Timer;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
@@ -382,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private void sendCommand(LiveSplitCommand cmd) {
         cmdRequestActive = true;
         networkIndicator.setVisibility(View.VISIBLE);
-        new Network(defaultCommandListener).execute(cmd.toString(), Boolean.toString(false));
+        new Network(this, defaultCommandListener).execute(cmd.toString(), Boolean.toString(false), Boolean.toString(false));
     }
 
     @Override

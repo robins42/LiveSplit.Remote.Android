@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import de.ekelbatzen.livesplitremote.gui.MainActivity;
+
 @SuppressWarnings("HardCodedStringLiteral")
 public class Timer extends TextView {
     private long ms;

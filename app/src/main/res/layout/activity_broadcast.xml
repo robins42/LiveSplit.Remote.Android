@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="de.ekelbatzen.livesplitremote.gui.BroadcastActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/infoBroadcast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/broadcastSearching"
+            android:textSize="16sp" />
+
+        <ProgressBar
+            android:id="@+id/broadcastingIndicator"
+            android:layout_width="18sp"
+            android:layout_height="18sp"
+            android:layout_alignParentRight="true"
+            android:indeterminate="true"
+            android:visibility="invisible" />
+
+        <View
+            android:id="@+id/broadcastDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/infoBroadcast"
+            android:background="#999999" />
+
+
+        <ListView
+            android:id="@+id/serversListview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/broadcastDivider"
+            android:layout_above="@+id/broadcastDivider2"/>
+
+        <View
+            android:id="@id/broadcastDivider2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/buttonManualIp"
+            android:background="#999999" />
+
+        <Button
+            android:id="@id/buttonManualIp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/enter_manually" />
+    </RelativeLayout>
+
+</LinearLayout>

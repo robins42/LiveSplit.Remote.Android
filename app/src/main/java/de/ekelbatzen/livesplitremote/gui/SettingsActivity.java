@@ -1,8 +1,8 @@
-package de.ekelbatzen.livesplitremote;
+package de.ekelbatzen.livesplitremote.gui;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.DialogPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -10,24 +10,28 @@ import android.widget.Toast;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import de.ekelbatzen.livesplitremote.network.Network;
+import de.ekelbatzen.livesplitremote.network.Poller;
+import de.ekelbatzen.livesplitremote.R;
+
 public class SettingsActivity extends PreferenceActivity {
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
     private String lastIp;
     private String lastPort;
-    private DialogPreference prefIp;
-    private DialogPreference prefPort;
-    private DialogPreference prefPolling;
-    private DialogPreference prefTimeout;
+    private Preference prefIp;
+    private Preference prefPort;
+    private Preference prefPolling;
+    private Preference prefTimeout;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
         addPreferencesFromResource(R.xml.preferences);
-        prefIp = (DialogPreference) findPreference(getString(R.string.settingsIdIp));
-        prefPort = (DialogPreference) findPreference(getString(R.string.settingsIdPort));
-        prefPolling = (DialogPreference) findPreference(getString(R.string.settingsIdPolldelay));
-        prefTimeout = (DialogPreference) findPreference(getString(R.string.settingsIdTimeout));
+        prefIp = (Preference) findPreference(getString(R.string.settingsIdIp));
+        prefPort = (Preference) findPreference(getString(R.string.settingsIdPort));
+        prefPolling = (Preference) findPreference(getString(R.string.settingsIdPolldelay));
+        prefTimeout = (Preference) findPreference(getString(R.string.settingsIdTimeout));
 
         updatePreferenceSummaryTexts();
     }

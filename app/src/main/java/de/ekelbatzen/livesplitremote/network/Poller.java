@@ -1,7 +1,9 @@
-package de.ekelbatzen.livesplitremote;
+package de.ekelbatzen.livesplitremote.network;
 
 import android.util.Log;
 
+import de.ekelbatzen.livesplitremote.R;
+import de.ekelbatzen.livesplitremote.gui.MainActivity;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
@@ -88,11 +90,11 @@ public class Poller {
             act.onPollStart();
 
             // First get time to also see if server is available
-            new Network(new NetworkResponseListener() {
+            new Network(act, new NetworkResponseListener() {
                 @Override
                 public void onResponse(final String lsTime) {
                     // Then get timer phase since it may not be supported while the server is online
-                    new Network(new NetworkResponseListener() {
+                    new Network(act, new NetworkResponseListener() {
                         @Override
                         public void onResponse(String lsTimerphase) {
                             maybeOutdatedCounter = 0;
@@ -141,7 +143,7 @@ public class Poller {
                             act.onPollEnd();
                             finishedListener.onResponse(null);
                         }
-                    }).execute(LiveSplitCommand.GETTIMERSTATE.toString(), Boolean.toString(true));
+                    }).execute(LiveSplitCommand.GETTIMERSTATE.toString(), Boolean.toString(true), Boolean.toString(false));
                 }
 
                 @Override
@@ -158,7 +160,7 @@ public class Poller {
                     act.onPollEnd();
                     finishedListener.onResponse(null);
                 }
-            }).execute(LiveSplitCommand.GETTIME.toString(), Boolean.toString(true));
+            }).execute(LiveSplitCommand.GETTIME.toString(), Boolean.toString(true), Boolean.toString(false));
         }
     }
 
