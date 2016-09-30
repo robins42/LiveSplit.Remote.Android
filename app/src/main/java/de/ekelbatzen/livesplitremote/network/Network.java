@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote;
+package de.ekelbatzen.livesplitremote.network;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -33,13 +33,13 @@ public class Network extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... params) {
+        String response = null;
+
         synchronized (LOCK) {
             Log.v("Network", "Sending " + params[0] + " to " + ip.getHostAddress() + ':' + port);
             cmdSuccessful = false;
             String cmd = params[0];
             boolean listenForResponse = Boolean.parseBoolean(params[1]);
-
-            String response = null;
 
             try {
                 if (socket == null || !socket.isConnected()) {
@@ -65,9 +65,9 @@ public class Network extends AsyncTask<String, String, String> {
                     e1.printStackTrace();
                 }
             }
-
-            return response;
         }
+
+        return response;
     }
 
     @Override
@@ -130,9 +130,17 @@ public class Network extends AsyncTask<String, String, String> {
         }
     }
 
+    public static InetAddress getIp() {
+        return ip;
+    }
+
     public static void setIp(InetAddress ip) {
         closeConnection();
         Network.ip = ip;
+    }
+
+    public static int getPort() {
+        return port;
     }
 
     public static void setPort(int port) {
@@ -142,14 +150,6 @@ public class Network extends AsyncTask<String, String, String> {
 
     public static boolean hasIp() {
         return ip != null;
-    }
-
-    public static InetAddress getIp() {
-        return ip;
-    }
-
-    public static int getPort() {
-        return port;
     }
 
     public static void setTimeoutMs(int timeoutMs) {

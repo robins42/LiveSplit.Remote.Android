@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote;
+package de.ekelbatzen.livesplitremote.gui;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,6 +27,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import de.ekelbatzen.livesplitremote.network.Network;
+import de.ekelbatzen.livesplitremote.network.Poller;
+import de.ekelbatzen.livesplitremote.R;
+import de.ekelbatzen.livesplitremote.Timer;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
@@ -51,9 +55,13 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private boolean cmdRequestActive;
     private boolean pollActive;
     private Vibrator vibrator;
+    public static boolean darkTheme;
+    public static boolean themeChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        readPreferences();
+        setTheme(darkTheme ? R.style.AppThemeDark : R.style.AppThemeLight);
         super.onCreate(savedInstanceState);
 
         // Print any unexpected exceptions to a toast before crashing
@@ -83,7 +91,9 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             }
         });
 
+
         setContentView(R.layout.activity_main);
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setLogo(R.mipmap.ic_launcher);
@@ -103,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         pauseButton = (Button) findViewById(R.id.pauseButton);
         timer = (Timer) findViewById(R.id.timer);
         networkIndicator = (ProgressBar) findViewById(R.id.networkIndicator);
+
+        timer.setTextColor(getResources().getColor(darkTheme ? R.color.darkTimerColor : R.color.lightTimerColor));
 
         timer.setActivity(this);
         updateGuiToTimerstate();
@@ -186,8 +198,6 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             }
         });
 
-        readPreferences();
-
         defaultCommandListener = new NetworkResponseListener() {
             @Override
             public void onResponse(String response) {
@@ -247,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             @Override
             public void run() {
                 try {
-                    Network.setPort(Integer.parseInt(prefs.getString(getString(R.string.settingsIdPort), getString(R.string.defaltPrefPort))));
+                    Network.setPort(Integer.parseInt(prefs.getString(getString(R.string.settingsIdPort), getString(R.string.defaultPrefPort))));
                 } catch (Exception ignored) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -279,6 +289,17 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 @Override
                 public void run() {
                     Toast.makeText(MainActivity.this, R.string.timeoutParseError, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        try {
+            darkTheme = prefs.getBoolean(getString(R.string.settingsIdDarktheme), true);
+        } catch (Exception ignored) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, R.string.themeParseError, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -356,6 +377,18 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         }.start();
 
         updateGuiToTimerstate();
+
+        if(themeChanged){
+            themeChanged = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                recreate();
+            } else {
+                // recreate not available below android 3.0, doing workaround
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+            }
+        }
     }
 
     @Override

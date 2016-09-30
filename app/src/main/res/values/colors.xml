@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#3F51B5</color>
-    <color name="timerColor">#000000</color>
+    <color name="lightColorPrimary">#3F51B5</color>
+    <color name="lightColorPrimaryDark">#303F9F</color>
+    <color name="lightColorAccent">#3F51B5</color>
+    <color name="lightTimerColor">#000000</color>
+
+    <color name="darkColorPrimary">#111111</color>
+    <color name="darkColorPrimaryDark">#000000</color>
+    <color name="darkColorAccent">#2DABCA</color>
+    <color name="darkTimerColor">#FFFFFF</color>
 </resources>

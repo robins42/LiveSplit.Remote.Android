@@ -13,7 +13,7 @@
             android:title="Port" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Advanced settings">
+    <PreferenceCategory android:title="Other settings">
         <ListPreference
             android:defaultValue="2 s"
             android:entries="@array/pollingDelaysReadable"
@@ -31,5 +31,10 @@
             android:persistent="true"
             android:summary="@string/prefTimeoutSummary"
             android:title="Network timeout" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settingsIdDarktheme"
+            android:title="Dark theme" />
     </PreferenceCategory>
 </PreferenceScreen>

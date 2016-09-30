@@ -5,15 +5,18 @@
     <string name="settingsIdPort">Port</string>
     <string name="settingsIdPolldelay">PollDelay</string>
     <string name="settingsIdTimeout">Timeout</string>
+    <string name="settingsIdDarktheme">DarkTheme</string>
     <string name="defaultPrefPolling">2 s</string>
     <string name="defaultPrefTimeout">3 s</string>
-    <string name="defaltPrefPort">16834</string>
+    <string name="defaultPrefPort">16834</string>
+    <string name="defaultPrefIp">Not set yet</string>
 
     <string name="serverIpNotSet">Server IP has not been set yet.</string>
     <string name="ipParseError">Error reading saved IP</string>
     <string name="portParseError">Error reading saved port</string>
     <string name="pollingParseError">Error reading saved polling delay setting</string>
     <string name="timeoutParseError">Error reading saved network timeout setting</string>
+    <string name="themeParseError">Error reading saved theme setting</string>
     <string name="ipSyntaxError">IP syntax is not valid</string>
     <string name="portSyntaxError">Port %1$s is not valid</string>
     <string name="ipNotReached">Server unavailable.\nHave you configured it in the layout\nand started it via Control > Start Server?</string>
