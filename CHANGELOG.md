@@ -1,3 +1,6 @@
+0.3.4: (October 1st 2016)
+- Fixed potential crash
+
 0.3.3: (September 30th 2016)
 - Added dark theme
 - Improved changelog file

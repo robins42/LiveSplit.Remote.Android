@@ -211,7 +211,9 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                         }
                     });
                 }
-                poller.instantPoll();
+                if(poller != null){
+                    poller.instantPoll();
+                }
             }
 
             @Override
