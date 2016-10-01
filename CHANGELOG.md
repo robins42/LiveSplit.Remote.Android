@@ -1,3 +1,7 @@
+0.3.5: (October 1st 2016)
+- Exceptions aren't caught anymore, now the proper Android dialog can be used upon crash
+- .apk are now signed beginning with this version 0.3.5 
+
 0.3.4: (October 1st 2016)
 - Fixed potential crash
 

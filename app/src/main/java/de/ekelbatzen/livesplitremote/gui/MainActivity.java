@@ -6,13 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,14 +25,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import de.ekelbatzen.livesplitremote.network.Network;
-import de.ekelbatzen.livesplitremote.network.Poller;
 import de.ekelbatzen.livesplitremote.R;
 import de.ekelbatzen.livesplitremote.Timer;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
+import de.ekelbatzen.livesplitremote.network.Network;
+import de.ekelbatzen.livesplitremote.network.Poller;
 
 public class MainActivity extends AppCompatActivity implements PollUpdateListener {
     private static final long VIBRATION_TIME = 100L;
@@ -63,34 +61,6 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         readPreferences();
         setTheme(darkTheme ? R.style.AppThemeDark : R.style.AppThemeLight);
         super.onCreate(savedInstanceState);
-
-        // Print any unexpected exceptions to a toast before crashing
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, final Throwable e) {
-                e.printStackTrace();
-
-                new Thread() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        Toast.makeText(getApplicationContext(), Log.getStackTraceString(e), Toast.LENGTH_LONG).show();
-                        Looper.loop();
-                    }
-                }.start();
-
-                // Wait for the toast to disappear
-                try {
-                    Thread.sleep(4000L);
-                } catch (InterruptedException ignored) {
-                    // Ignored
-                }
-
-                finish();
-                System.exit(0);
-            }
-        });
-
 
         setContentView(R.layout.activity_main);
 
