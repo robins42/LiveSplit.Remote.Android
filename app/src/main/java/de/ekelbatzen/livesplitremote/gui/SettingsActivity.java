@@ -23,6 +23,7 @@ public class SettingsActivity extends PreferenceActivity {
     private DialogPreference prefPort;
     private DialogPreference prefPolling;
     private DialogPreference prefTimeout;
+    private DialogPreference prefTimerformat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class SettingsActivity extends PreferenceActivity {
         prefPort = (DialogPreference) findPreference(getString(R.string.settingsIdPort));
         prefPolling = (DialogPreference) findPreference(getString(R.string.settingsIdPolldelay));
         prefTimeout = (DialogPreference) findPreference(getString(R.string.settingsIdTimeout));
+        prefTimerformat = (DialogPreference) findPreference(getString(R.string.settingsIdTimerformat));
 
         updatePreferenceSummaryTexts();
     }
@@ -43,7 +45,7 @@ public class SettingsActivity extends PreferenceActivity {
         super.onResume();
 
         lastIp = getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdIp), null);
-        lastPort = getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdPort), "16834");
+        lastPort = getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdPort), getString(R.string.defaultPrefPort));
 
         prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
@@ -79,15 +81,15 @@ public class SettingsActivity extends PreferenceActivity {
                         }
                     }.start();
                 } else if (key.equals(getString(R.string.settingsIdPort))) {
-                    final String portInput = sharedPreferences.getString(key, "16834");
-                    try{
+                    final String portInput = sharedPreferences.getString(key, getString(R.string.defaultPrefPort));
+                    try {
                         int port = Integer.parseInt(portInput);
-                        if(port < 1 || port > 65535){
+                        if (port < 1 || port > 65535) {
                             throw new NumberFormatException("Number is out of valid port range");
                         }
                         Network.setPort(port);
                         lastPort = portInput;
-                    } catch (NumberFormatException ignored){
+                    } catch (NumberFormatException ignored) {
                         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefListener);
                         sharedPreferences.edit().putString(key, lastPort).apply();
                         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);
@@ -116,6 +118,9 @@ public class SettingsActivity extends PreferenceActivity {
                         finish();
                         startActivity(intent);
                     }
+                } else if (key.equals(getString(R.string.settingsIdTimerformat))) {
+                    String format = sharedPreferences.getString(key, getString(R.string.defaultPrefTimerformat));
+                    Timer.setFormatting(format);
                 }
 
                 updatePreferenceSummaryTexts();
@@ -133,8 +138,9 @@ public class SettingsActivity extends PreferenceActivity {
 
     private void updatePreferenceSummaryTexts() {
         prefIp.setSummary(getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdIp), getString(R.string.defaultPrefIp)));
-        prefPort.setSummary(getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdPort), "16834"));
+        prefPort.setSummary(getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdPort), getString(R.string.defaultPrefPort)));
         prefPolling.setSummary(getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdPolldelay), getString(R.string.defaultPrefPolling)) + '\n' + getString(R.string.prefPollingSummary));
         prefTimeout.setSummary(getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdTimeout), getString(R.string.defaultPrefTimeout)) + '\n' + getString(R.string.prefTimeoutSummary));
+        prefTimerformat.setSummary(getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdTimerformat), getString(R.string.defaultPrefTimerformat)) + '\n' + getString(R.string.prefTimerformatSummary));
     }
 }

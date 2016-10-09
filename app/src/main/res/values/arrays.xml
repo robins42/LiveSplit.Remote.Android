@@ -67,4 +67,52 @@
         <item>14 s</item>
         <item>15 s</item>
     </string-array>
+
+    <string-array name="timerFormatReadable">
+        <item>HH:mm:ss.SS</item>
+        <item>HH:mm:ss.S</item>
+        <item>HH:mm:ss</item>
+
+        <item>[HH:]mm:ss.SS</item>
+        <item>[HH:]mm:ss.S</item>
+        <item>[HH:]mm:ss</item>
+
+        <item>[HH:][mm:]ss.SS [Default]</item>
+        <item>[HH:][mm:]ss.S</item>
+
+        <item>mm:ss.SS</item>
+        <item>mm:ss.S</item>
+        <item>mm:ss</item>
+
+        <item>[mm:]ss.SS</item>
+        <item>[mm:]ss.S</item>
+        <item>[mm:]ss</item>
+
+        <item>ss.SS</item>
+        <item>ss.S</item>
+    </string-array>
+
+    <string-array name="timerFormatSystem">
+        <item>HH:mm:ss.SS</item>
+        <item>HH:mm:ss.S</item>
+        <item>HH:mm:ss</item>
+
+        <item>[HH:]mm:ss.SS</item>
+        <item>[HH:]mm:ss.S</item>
+        <item>[HH:]mm:ss</item>
+
+        <item>[HH:][mm:]ss.SS</item>
+        <item>[HH:][mm:]ss.S</item>
+
+        <item>mm:ss.SS</item>
+        <item>mm:ss.S</item>
+        <item>mm:ss</item>
+
+        <item>[mm:]ss.SS</item>
+        <item>[mm:]ss.S</item>
+        <item>[mm:]ss</item>
+
+        <item>ss.SS</item>
+        <item>ss.S</item>
+    </string-array>
 </resources>

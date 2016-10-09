@@ -1,3 +1,6 @@
+0.3.6: (October 9th 2016)
+- Added timer format setting
+
 0.3.5: (October 1st 2016)
 - Exceptions aren't caught anymore, now the proper Android dialog can be used upon crash
 - .apk are now signed beginning with this version 0.3.5 

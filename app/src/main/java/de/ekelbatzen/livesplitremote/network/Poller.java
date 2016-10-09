@@ -9,6 +9,7 @@ import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
 
 public class Poller {
+    private static final String TAG = Poller.class.getName();
     public static long pollDelayMs = 2000L;
     private boolean ipLastOnline;
     private TimerState lastTimerstate;
@@ -44,7 +45,7 @@ public class Poller {
                     public void run() {
                         try {
                             sleep(pollDelayMs);
-                        } catch (InterruptedException ignored) {
+                        } catch (InterruptedException ignore) {
                             // nothing, was probably interrupted on purpose
                         }
 
@@ -114,7 +115,7 @@ public class Poller {
 
                                 lastTimerstate = newTimerstate;
                             } else {
-                                Log.w("Poller", "Received unparsable timerphase response: " + lsTimerphase);
+                                Log.w(TAG, act.getString(R.string.timerphaseParseError, lsTimerphase));
                                 oooCounter++;
                                 if (oooCounter > 3) {
                                     act.onProblem(act.getString(R.string.networkHiccup));

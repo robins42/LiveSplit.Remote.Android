@@ -13,7 +13,23 @@
             android:title="Port" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Other settings">
+    <PreferenceCategory android:title="Graphics">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settingsIdDarktheme"
+            android:title="Dark theme" />
+
+        <ListPreference
+            android:defaultValue="[HH:][mm:]ss.SS"
+            android:entries="@array/timerFormatReadable"
+            android:entryValues="@array/timerFormatSystem"
+            android:key="@string/settingsIdTimerformat"
+            android:persistent="true"
+            android:summary="@string/prefTimerformatSummary"
+            android:title="Timer format" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Network">
         <ListPreference
             android:defaultValue="2 s"
             android:entries="@array/pollingDelaysReadable"
@@ -31,10 +47,5 @@
             android:persistent="true"
             android:summary="@string/prefTimeoutSummary"
             android:title="Network timeout" />
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/settingsIdDarktheme"
-            android:title="Dark theme" />
     </PreferenceCategory>
 </PreferenceScreen>

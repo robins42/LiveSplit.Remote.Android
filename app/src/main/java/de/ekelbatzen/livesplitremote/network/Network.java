@@ -17,6 +17,7 @@ import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public class Network extends AsyncTask<String, String, String> {
+    private static final String TAG = Network.class.getName();
     private static int timeoutMs = 3000;
     private static InetAddress ip;
     private static int port = 16834;
@@ -36,7 +37,7 @@ public class Network extends AsyncTask<String, String, String> {
         String response = null;
 
         synchronized (LOCK) {
-            Log.v("Network", "Sending " + params[0] + " to " + ip.getHostAddress() + ':' + port);
+            Log.v(TAG, "Sending " + params[0] + " to " + ip.getHostAddress() + ':' + port);
             cmdSuccessful = false;
             String cmd = params[0];
             boolean listenForResponse = Boolean.parseBoolean(params[1]);
@@ -53,16 +54,14 @@ public class Network extends AsyncTask<String, String, String> {
                 cmdSuccessful = true;
             } catch (SocketTimeoutException e) {
                 // Just print the short timeout message without printing stacktrace, not necessary to spam logcat
-                Log.w("Network", "Got an exception trying to send " + cmd + " to " + ip + ':' + port + " - " + e.getMessage());
+                Log.w(TAG, "Got an exception trying to send " + cmd + " to " + ip + ':' + port + " - " + e.getMessage());
             } catch (Exception e) {
-                Log.w("Network", "Got an exception trying to send " + cmd + " to " + ip + ':' + port);
-                e.printStackTrace();
+                Log.w(TAG, "Got an exception trying to send " + cmd + " to " + ip + ':' + port, e);
                 closeConnection();
                 try {
                     openConnection();
                 } catch (IOException e1) {
-                    Log.w("Network", "Got an exception after reopening connection after previous exception: ");
-                    e1.printStackTrace();
+                    Log.w(TAG, "Got an exception after reopening connection after previous exception: ", e1);
                 }
             }
         }
@@ -106,7 +105,7 @@ public class Network extends AsyncTask<String, String, String> {
                     in.close();
                     in = null;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.w(TAG, "Could not close input stream", e);
                 }
             }
 
@@ -115,7 +114,7 @@ public class Network extends AsyncTask<String, String, String> {
                     out.close();
                     out = null;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.w(TAG, "Could not close output stream", e);
                 }
             }
 
@@ -124,7 +123,7 @@ public class Network extends AsyncTask<String, String, String> {
                     socket.close();
                     socket = null;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.w(TAG, "Could not close socket", e);
                 }
             }
         }
@@ -158,7 +157,7 @@ public class Network extends AsyncTask<String, String, String> {
             try {
                 socket.setSoTimeout(timeoutMs);
             } catch (SocketException e) {
-                e.printStackTrace();
+                Log.w(TAG, "Could not set network timeout", e);
             }
         }
     }

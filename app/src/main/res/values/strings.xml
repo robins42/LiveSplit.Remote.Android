@@ -6,10 +6,12 @@
     <string name="settingsIdPolldelay">PollDelay</string>
     <string name="settingsIdTimeout">Timeout</string>
     <string name="settingsIdDarktheme">DarkTheme</string>
+    <string name="settingsIdTimerformat">TimerFormat</string>
     <string name="defaultPrefPolling">2 s</string>
     <string name="defaultPrefTimeout">3 s</string>
     <string name="defaultPrefPort">16834</string>
     <string name="defaultPrefIp">Not set yet</string>
+    <string name="defaultPrefTimerformat">[HH:][mm:]ss.SS</string>
 
     <string name="serverIpNotSet">Server IP has not been set yet.</string>
     <string name="ipParseError">Error reading saved IP</string>
@@ -17,18 +19,22 @@
     <string name="pollingParseError">Error reading saved polling delay setting</string>
     <string name="timeoutParseError">Error reading saved network timeout setting</string>
     <string name="themeParseError">Error reading saved theme setting</string>
+    <string name="timerFormatParseError">Error reading saved timer format setting</string>
     <string name="ipSyntaxError">IP syntax is not valid</string>
     <string name="portSyntaxError">Port %1$s is not valid</string>
     <string name="ipNotReached">Server unavailable.\nHave you configured it in the layout\nand started it via Control > Start Server?</string>
     <string name="ipNotReachedInfo">Server unavailable at %1$s:%2$d.</string>
-    <string name="displayIp">Connected to %1$s:%2$d.</string>
     <string name="gameTimeBug">Can\'t synchronize game time while game is not running.</string>
     <string name="outdatedServer">Your LiveSplit server may be outdated.\nPlease use the newest version or this app won\'t work properly.</string>
+    <string name="timerphaseParseError">"Received unparsable timerphase response: %1$s"</string>
+    <string name="errorSocketOpen">Could not open network socket</string>
+    <string name="networkHiccup">The network can\'t keep up with the requests and messes up!\nMaybe you need to increase the polling delay.</string>
 
     <string name="prefPollingSummary">Time between automatic updates.\nLower values may drain your battery faster.</string>
     <string name="prefTimeoutSummary">Time to wait until deciding that something went wrong</string>
+    <string name="prefTimerformatSummary">How the time is displayed</string>
 
-    <string name="timerPlaceholder">00:00:00.00</string>
+    <string name="displayIp">Connected to %1$s:%2$d.</string>
     <string name="startTimer">Start</string>
     <string name="undoSplit">Undo</string>
     <string name="skipSplit">Skip</string>
@@ -42,5 +48,4 @@
     <string name="infosTitle">Infos</string>
     <string name="infosCancel">OK</string>
     <string name="infosMsg">This is a remote for the timer program <a href="https://github.com/LiveSplit/LiveSplit">LiveSplit</a>.\n\nIn order to work you need to add\n<b>Control > LiveSplit Server</b> to your layout and then start the server on the main window with\n<b>Rightclick > Control > Start Server</b>.\n\nDevelopment continues on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android">GitHub</a>.</string>
-    <string name="networkHiccup">The network can\'t keep up with the requests and messes up!\nMaybe you need to increase the polling delay.</string>
 </resources>

@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,7 +27,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import de.ekelbatzen.livesplitremote.R;
-import de.ekelbatzen.livesplitremote.Timer;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
@@ -37,6 +37,7 @@ import de.ekelbatzen.livesplitremote.network.Poller;
 public class MainActivity extends AppCompatActivity implements PollUpdateListener {
     private static final long VIBRATION_TIME = 100L;
     private static final long OFFLINE_TOAST_COOLDOWN_MS = 10000L;
+    private static final String TAG = MainActivity.class.getName();
     private TimerState timerState;
     private TextView info;
     private Button startSplitButton;
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                         }
                     });
                 }
-                if(poller != null){
+                if (poller != null) {
                     poller.instantPoll();
                 }
             }
@@ -275,6 +276,18 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 }
             });
         }
+
+        try {
+            String timerFormat = prefs.getString(getString(R.string.settingsIdTimerformat), getString(R.string.defaultPrefTimerformat));
+            Timer.setFormatting(timerFormat);
+        } catch (Exception ignored) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, R.string.timerFormatParseError, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override
@@ -321,6 +334,8 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         poller = new Poller(this);
         poller.startPolling();
 
+        timer.onTimerFormatChanged();
+
         new Thread() {
             @Override
             public void run() {
@@ -334,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 try {
                     Network.openConnection();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.w(TAG, getString(R.string.errorSocketOpen), e);
                 }
                 cmdRequestActive = false;
                 if (!pollActive) {
@@ -350,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
         updateGuiToTimerstate();
 
-        if(themeChanged){
+        if (themeChanged) {
             themeChanged = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 recreate();
@@ -376,12 +391,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             poller = null;
         }
 
-        new Thread() {
-            @Override
-            public void run() {
-                Network.closeConnection();
-            }
-        }.start();
+        new MainActivity.NetworkCloseThread().start();
     }
 
     private void sendCommand(LiveSplitCommand cmd) {
@@ -405,25 +415,23 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
     @Override
     public void onTimeSynchronized(String lsTime) {
-        if (lsTime != null) {
-            if (!lsTime.equals("0.00")) {
-                timer.setMs(lsTime);
-            } else {
-                // Bug on LiveSplit server when using game time comparison, ignore synchronization until fixed
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, R.string.gameTimeBug, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+        if (!"0.00".equals(lsTime)) {
+            timer.setMs(lsTime);
+        } else {
+            // Bug on LiveSplit server when using game time comparison, ignore synchronization until fixed
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, R.string.gameTimeBug, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
     @Override
     public void onServerWentOffline() {
         info.setText(getString(R.string.ipNotReachedInfo, Network.getIp().getHostAddress(), Network.getPort()));
-        offlineToast = Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG);
+        offlineToast = Toast.makeText(this, R.string.ipNotReached, Toast.LENGTH_LONG);
         offlineToast.show();
         timerState = TimerState.ERROR;
         timer.stop();
@@ -547,18 +555,13 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         builder.setMessage(R.string.infosMsg);
         builder.setCancelable(true);
 
-        builder.setPositiveButton(R.string.infosCancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setPositiveButton(R.string.infosCancel, new MainActivity.InfoCloseListener());
 
         AlertDialog ad = builder.create();
         ad.show();
 
         // Make links clickable
-        TextView msg = ((TextView) ad.findViewById(android.R.id.message));
+        TextView msg = (TextView) ad.findViewById(android.R.id.message);
         if (msg != null) {
             msg.setMovementMethod(LinkMovementMethod.getInstance());
         }
@@ -574,6 +577,20 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && vibrator.hasVibrator()) {
                 vibrator.vibrate(VIBRATION_TIME);
             }
+        }
+    }
+
+    private static class NetworkCloseThread extends Thread {
+        @Override
+        public void run() {
+            Network.closeConnection();
+        }
+    }
+
+    private static class InfoCloseListener implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
         }
     }
 }

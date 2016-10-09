@@ -56,13 +56,12 @@
             android:layout_below="@id/startSpacer"
             android:orientation="vertical">
 
-            <de.ekelbatzen.livesplitremote.Timer
+            <de.ekelbatzen.livesplitremote.gui.Timer
                 android:id="@+id/timer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/timerPlaceholder"
                 android:textColor="@color/lightTimerColor"
                 android:textSize="40sp"
                 android:typeface="monospace" />
