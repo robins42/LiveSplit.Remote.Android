@@ -1,3 +1,6 @@
+0.3.7: (November 17th 2016)
+- App is now out of beta (no real code changes here)
+
 0.3.6: (October 9th 2016)
 - Added timer format setting
 

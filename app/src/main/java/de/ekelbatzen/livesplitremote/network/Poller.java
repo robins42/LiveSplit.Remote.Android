@@ -103,7 +103,6 @@ public class Poller {
 
                             if (newTimerstate != null) {
                                 oooCounter = 0;
-                                // Received unparsable result, maybe this is a network hiccup where the socket received time instead of timerphase
                                 if (!ipLastOnline) {
                                     ipLastOnline = true;
                                     act.onServerWentOnline(newTimerstate);
@@ -115,6 +114,7 @@ public class Poller {
 
                                 lastTimerstate = newTimerstate;
                             } else {
+                                // Received unparsable result, maybe this is a network hiccup where the socket received time instead of timerphase
                                 Log.w(TAG, act.getString(R.string.timerphaseParseError, lsTimerphase));
                                 oooCounter++;
                                 if (oooCounter > 3) {
