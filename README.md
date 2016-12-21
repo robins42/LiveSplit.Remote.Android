@@ -9,5 +9,5 @@ LiveSplit Android Remote is an app to control [LiveSplit](https://github.com/Liv
 </p>
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/screenshot.png" alt="LiveSplit Android Remote"/>
+	<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/screenshot.png" alt="LiveSplit Android Remote"/>
 </p>
