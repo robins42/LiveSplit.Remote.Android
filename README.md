@@ -14,36 +14,52 @@ LiveSplit Android Remote is an app to control [LiveSplit](https://github.com/Liv
 	<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/screenshot.png" alt="LiveSplit Android Remote"/>
 </p>
 
+## Features ##
+- A running timer that synchronizes with LiveSplit
+- Start
+- Pause
+- Resume
+- Reset
+- Split
+- Undo split
+- Skip split
+- Keeps screen on
+
 ## Setup ##
 
-1. Use the latest Development Build of LiveSplit : http://livesplit.org/downloads/
+1. Download and install the current app version from Google Play (Click on the Google Play Button above to get there)<br/><br/>or<br/><br/>download any current/previous .apk from the apk folder here on GitHub. (You may have to allow apps from unknown sources in your phone security/developer settings. Older versions may not work as well for obvious reasons.)
+2. Use the latest Development Build of LiveSplit : http://livesplit.org/downloads/
 	<p align="center">
 		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_1.png" alt="Setup step 1"/>
     </p>
-2. Open your layout
+3. Open your layout
     <p align="center">
 		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_2.png" alt="Setup step 2"/>
 	</p>
-3. Add the LiveSplit Server component to your layout
+4. Add the LiveSplit Server component to your layout
 	<p align="center">
 		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_3.png" alt="Setup step 3"/>
 	</p>
-4. Note your IP, you will need it for the app (You may also change port if necessary)
+5. Note your IP, you will need it for the app (You may also change port if necessary)
 	<p align="center">
 		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_4.png" alt="Setup step 4"/>
 	</p>
-5. Start the server
+6. Start the server
 	<p align="center">
 		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_5.png" alt="Setup step 5"/>
 	</p>
 
-6. Go to app settings
+7. Go to app settings
 	<p align="center">
 		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_6.png" alt="Setup step 6"/>
 	</p>
-7. Enter your IP (and port if you changed it)
+8. Enter your IP (and port if you changed it)
 	<p align="center">
 		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_7.png" alt="Setup step 7"/>
 	</p>
 
 (You can also use your public IP to access the server via internet, but you will have to forward that port in your router)
+
+## Using the code ##
+
+If you want to compile the .apk yourself (although they are all in the apk folder) or edit the code (although you can make requests to me what you want as a new feature or fix), you should be able to pretty much just put the whole project into Android Studio. You will need the SDK files specified in app/build.gradle or change it to yours.
