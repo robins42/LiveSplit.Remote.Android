@@ -121,6 +121,8 @@ public class SettingsActivity extends PreferenceActivity {
                 } else if (key.equals(getString(R.string.settingsIdTimerformat))) {
                     String format = sharedPreferences.getString(key, getString(R.string.defaultPrefTimerformat));
                     Timer.setFormatting(format);
+                } else if (key.equals(getString(R.string.settingsIdVibrate))) {
+                    MainActivity.vibrationEnabled = sharedPreferences.getBoolean(key, true);
                 }
 
                 updatePreferenceSummaryTexts();

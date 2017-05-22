@@ -7,6 +7,7 @@
     <string name="settingsIdTimeout">Timeout</string>
     <string name="settingsIdDarktheme">DarkTheme</string>
     <string name="settingsIdTimerformat">TimerFormat</string>
+    <string name="settingsIdVibrate">VibrationEnabled</string>
     <string name="defaultPrefPolling">2 s</string>
     <string name="defaultPrefTimeout">3 s</string>
     <string name="defaultPrefPort">16834</string>
@@ -19,6 +20,7 @@
     <string name="pollingParseError">Error reading saved polling delay setting</string>
     <string name="timeoutParseError">Error reading saved network timeout setting</string>
     <string name="themeParseError">Error reading saved theme setting</string>
+    <string name="vibrationParseError">Error reading saved vibration setting</string>
     <string name="timerFormatParseError">Error reading saved timer format setting</string>
     <string name="ipSyntaxError">IP syntax is not valid</string>
     <string name="portSyntaxError">Port %1$s is not valid</string>
@@ -34,7 +36,8 @@
     <string name="prefTimeoutSummary">Time to wait until deciding that something went wrong</string>
     <string name="prefTimerformatSummary">How the time is displayed</string>
 
-    <string name="displayIp">Connected to %1$s:%2$d.</string>
+    <string name="displayIpConnected">Connected to %1$s:%2$d.</string>
+    <string name="displayIpAppstart">Connecting to %1$s:%2$d …</string>
     <string name="startTimer">Start</string>
     <string name="undoSplit">Undo</string>
     <string name="skipSplit">Skip</string>
@@ -47,5 +50,5 @@
     <string name="menuInfo">Infos</string>
     <string name="infosTitle">Infos</string>
     <string name="infosCancel">OK</string>
-    <string name="infosMsg">This is a remote for the timer program <a href="https://github.com/LiveSplit/LiveSplit">LiveSplit</a>.\n\nIn order to work you need to add\n<b>Control > LiveSplit Server</b> to your layout and then start the server on the main window with\n<b>Rightclick > Control > Start Server</b>.\n\nDevelopment continues on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android">GitHub</a>.</string>
+    <string name="infosMsg">This is a remote for the timer program <a href="https://github.com/LiveSplit/LiveSplit">LiveSplit</a>.\n\nIn order to work you need to add\n<b>Control > LiveSplit Server</b> to your layout and then start the server on the main window with\n<b>Rightclick > Control > Start Server</b>.\n\nDevelopment continues on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android">GitHub</a>.\n\nIf you want to contact me:\n- <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android/issues">GitHub</a>\n- <a href="https://discord.gg/N6wv8pW">Speedrun Tool Development Discord</a>\n- <a href="mailto:robin.schonborn@gmail.com">Email</a></string>
 </resources>

@@ -2,16 +2,15 @@ package de.ekelbatzen.livesplitremote.gui;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.util.Locale;
 
 import de.ekelbatzen.livesplitremote.R;
 
-@SuppressWarnings("HardCodedStringLiteral")
-public class Timer extends TextView {
+public class Timer extends AppCompatTextView {
     private static final String TAG = Timer.class.getName();
     private long ms;
     private boolean running;
@@ -105,6 +104,13 @@ public class Timer extends TextView {
         } catch (NumberFormatException ignored) {
             // Received unparsable result, maybe this is a network hiccup where the socket received timerphase instead of time
             Log.w(TAG, "Received unparsable time response: " + lsTime);
+            oooCounter++;
+            if (oooCounter > 3 && act != null) {
+                act.onProblem(act.getString(R.string.networkHiccup));
+            }
+        } catch (NullPointerException e) {
+            Log.w(TAG, "Received null time response", e);
+
             oooCounter++;
             if (oooCounter > 3 && act != null) {
                 act.onProblem(act.getString(R.string.networkHiccup));

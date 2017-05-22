@@ -1,3 +1,10 @@
+0.3.8: (May 23rd 2017)
+- Fixed possible crash when in.readLine() responded null to a network request
+- Enabled ProGuard to optimize and shrink the .apk
+- Added setting for vibration
+- Added some contact links to info dialog
+- Some refactoring to update the code
+
 0.3.7: (November 17th 2016)
 - App is now out of beta (no real code changes here)
 

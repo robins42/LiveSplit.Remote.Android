@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private Vibrator vibrator;
     public static boolean darkTheme;
     public static boolean themeChanged;
+    public static boolean vibrationEnabled;
+    private boolean foundSavedIp;
+    private boolean foundSavedPort;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,85 +93,6 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         timer.setActivity(this);
         updateGuiToTimerstate();
 
-        startSplitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vibrate();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        vibrate();
-                        if (!Network.hasIp()) {
-                            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        if (timerState == TimerState.NOT_RUNNING) {
-                            sendCommand(LiveSplitCommand.START);
-                        } else if (timerState == TimerState.PAUSED) {
-                            sendCommand(LiveSplitCommand.RESUME);
-                        } else if (timerState == TimerState.RUNNING) {
-                            sendCommand(LiveSplitCommand.SPLIT);
-                        }
-                    }
-                });
-            }
-        });
-
-        undoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vibrate();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!Network.hasIp()) {
-                            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        sendCommand(LiveSplitCommand.UNDO);
-                    }
-                });
-            }
-        });
-
-        skipButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vibrate();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!Network.hasIp()) {
-                            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        sendCommand(LiveSplitCommand.SKIP);
-                    }
-                });
-            }
-        });
-
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vibrate();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!Network.hasIp()) {
-                            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        sendCommand(LiveSplitCommand.PAUSE);
-                    }
-                });
-            }
-        });
-
         defaultCommandListener = new NetworkResponseListener() {
             @Override
             public void onResponse(String response) {
@@ -178,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                         @Override
                         public void run() {
                             networkIndicator.setVisibility(View.INVISIBLE);
-
                         }
                     });
                 }
@@ -204,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     }
 
     private void readPreferences() {
+        foundSavedIp = false;
+        foundSavedPort = false;
+
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         final String savedIP = prefs.getString(getString(R.string.settingsIdIp), null);
@@ -214,6 +140,15 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 public void run() {
                     try {
                         Network.setIp(InetAddress.getByName(savedIP));
+                        foundSavedIp = true;
+                        if(foundSavedPort){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort()));
+                                }
+                            });
+                        }
                     } catch (UnknownHostException ignored) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -231,6 +166,15 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             public void run() {
                 try {
                     Network.setPort(Integer.parseInt(prefs.getString(getString(R.string.settingsIdPort), getString(R.string.defaultPrefPort))));
+                    foundSavedPort = true;
+                    if(foundSavedIp){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort()));
+                            }
+                        });
+                    }
                 } catch (Exception ignored) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -285,6 +229,17 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 @Override
                 public void run() {
                     Toast.makeText(MainActivity.this, R.string.timerFormatParseError, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        try {
+            vibrationEnabled = prefs.getBoolean(getString(R.string.settingsIdVibrate), true);
+        } catch (Exception ignored) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, R.string.vibrationParseError, Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -391,7 +346,12 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             poller = null;
         }
 
-        new MainActivity.NetworkCloseThread().start();
+        new Thread(){
+            @Override
+            public void run() {
+                Network.closeConnection();
+            }
+        }.start();
     }
 
     private void sendCommand(LiveSplitCommand cmd) {
@@ -440,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
     @Override
     public void onServerWentOnline(TimerState currentState) {
-        info.setText(getString(R.string.displayIp, Network.getIp().getHostAddress(), Network.getPort()));
+        info.setText(getString(R.string.displayIpConnected, Network.getIp().getHostAddress(), Network.getPort()));
         timerState = currentState;
         if (offlineToast != null) {
             offlineToast.cancel();
@@ -476,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                             timestampLastOfflineToast = System.currentTimeMillis();
                         }
                     } else {
-                        info.setText(getString(R.string.displayIp, Network.getIp().getHostAddress(), Network.getPort()));
+                        info.setText(getString(R.string.displayIpConnected, Network.getIp().getHostAddress(), Network.getPort()));
                     }
                 } else {
                     info.setText(R.string.serverIpNotSet);
@@ -568,6 +528,8 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     }
 
     private void vibrate() {
+        if(!vibrationEnabled) return;
+
         if (vibrator == null) {
             vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         }
@@ -580,11 +542,50 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         }
     }
 
-    private static class NetworkCloseThread extends Thread {
-        @Override
-        public void run() {
-            Network.closeConnection();
+    public void StartSplitClicked(View view) {
+        vibrate();
+        if (!Network.hasIp()) {
+            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        if (timerState == TimerState.NOT_RUNNING) {
+            sendCommand(LiveSplitCommand.START);
+        } else if (timerState == TimerState.PAUSED) {
+            sendCommand(LiveSplitCommand.RESUME);
+        } else if (timerState == TimerState.RUNNING) {
+            sendCommand(LiveSplitCommand.SPLIT);
+        }
+    }
+
+    public void UndoClicked(View view) {
+        vibrate();
+        if (!Network.hasIp()) {
+            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        sendCommand(LiveSplitCommand.UNDO);
+    }
+
+    public void SkipClicked(View view) {
+        vibrate();
+        if (!Network.hasIp()) {
+            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        sendCommand(LiveSplitCommand.SKIP);
+    }
+
+    public void PauseClicked(View view) {
+        vibrate();
+        if (!Network.hasIp()) {
+            Toast.makeText(MainActivity.this, R.string.serverIpNotSet, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        sendCommand(LiveSplitCommand.PAUSE);
     }
 
     private static class InfoCloseListener implements DialogInterface.OnClickListener {

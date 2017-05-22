@@ -1,6 +1,5 @@
 package de.ekelbatzen.livesplitremote.model;
 
-@SuppressWarnings("HardCodedStringLiteral")
 public enum TimerState {
     NOT_RUNNING("NotRunning"),
     RUNNING("Running"),

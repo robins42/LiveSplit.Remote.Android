@@ -1,6 +1,5 @@
 package de.ekelbatzen.livesplitremote.model;
 
-@SuppressWarnings("HardCodedStringLiteral")
 public enum LiveSplitCommand {
     START("starttimer"),
     SPLIT("split"),

@@ -15,7 +15,6 @@ import java.net.SocketTimeoutException;
 
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 
-@SuppressWarnings("HardCodedStringLiteral")
 public class Network extends AsyncTask<String, String, String> {
     private static final String TAG = Network.class.getName();
     private static int timeoutMs = 3000;
@@ -50,8 +49,10 @@ public class Network extends AsyncTask<String, String, String> {
                 out.flush();
                 if (listenForResponse) {
                     response = in.readLine();
+                    cmdSuccessful = response != null;
+                } else {
+                    cmdSuccessful = true;
                 }
-                cmdSuccessful = true;
             } catch (SocketTimeoutException e) {
                 // Just print the short timeout message without printing stacktrace, not necessary to spam logcat
                 Log.w(TAG, "Got an exception trying to send " + cmd + " to " + ip + ':' + port + " - " + e.getMessage());

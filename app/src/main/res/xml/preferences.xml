@@ -27,6 +27,11 @@
             android:persistent="true"
             android:summary="@string/prefTimerformatSummary"
             android:title="Timer format" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settingsIdVibrate"
+            android:title="Vibration" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Network">

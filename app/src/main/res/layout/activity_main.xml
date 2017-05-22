@@ -48,6 +48,7 @@
             android:layout_height="match_parent"
             android:layout_above="@id/startSpacer"
             android:text="@string/startTimer"
+            android:onClick="StartSplitClicked"
             android:textSize="40sp" />
 
         <LinearLayout
@@ -84,6 +85,7 @@
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@id/undoSkipSpacer"
                     android:text="@string/undoSplit"
+                    android:onClick="UndoClicked"
                     android:textSize="30sp" />
 
                 <Button
@@ -92,6 +94,7 @@
                     android:layout_height="match_parent"
                     android:layout_toRightOf="@id/undoSkipSpacer"
                     android:text="@string/skipSplit"
+                    android:onClick="SkipClicked"
                     android:textSize="30sp" />
             </RelativeLayout>
 
@@ -101,6 +104,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/pauseTimer"
+                android:onClick="PauseClicked"
                 android:textSize="30sp" />
         </LinearLayout>
     </RelativeLayout>
