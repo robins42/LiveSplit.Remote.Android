@@ -47,86 +47,75 @@ public class SettingsActivity extends PreferenceActivity {
         lastIp = getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdIp), null);
         lastPort = getPreferenceScreen().getSharedPreferences().getString(getString(R.string.settingsIdPort), getString(R.string.defaultPrefPort));
 
-        prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
-                if (key.equals(getString(R.string.settingsIdIp))) {
-                    final String input = sharedPreferences.getString(key, "");
+        prefListener = (sharedPreferences, key) -> {
+            if (key.equals(getString(R.string.settingsIdIp))) {
+                final String input = sharedPreferences.getString(key, "");
 
-                    if (input.isEmpty()) {
-                        Toast.makeText(SettingsActivity.this, R.string.ipSyntaxError, Toast.LENGTH_SHORT).show();
-                        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefListener);
-                        sharedPreferences.edit().putString(key, lastIp).apply();
-                        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);
-                    }
-
-                    // Network has to be on non-UI thread
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            try {
-                                Network.setIp(InetAddress.getByName(input));
-                                lastIp = input;
-                            } catch (UnknownHostException ignored) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(SettingsActivity.this, R.string.ipSyntaxError, Toast.LENGTH_SHORT).show();
-                                        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefListener);
-                                        sharedPreferences.edit().putString(key, lastIp).apply();
-                                        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);
-                                    }
-                                });
-                            }
-                        }
-                    }.start();
-                } else if (key.equals(getString(R.string.settingsIdPort))) {
-                    final String portInput = sharedPreferences.getString(key, getString(R.string.defaultPrefPort));
-                    try {
-                        int port = Integer.parseInt(portInput);
-                        if (port < 1 || port > 65535) {
-                            throw new NumberFormatException("Number is out of valid port range");
-                        }
-                        Network.setPort(port);
-                        lastPort = portInput;
-                    } catch (NumberFormatException ignored) {
-                        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefListener);
-                        sharedPreferences.edit().putString(key, lastPort).apply();
-                        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SettingsActivity.this, getString(R.string.portSyntaxError, portInput), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                } else if (key.equals(getString(R.string.settingsIdPolldelay))) {
-                    String pollingDelayStr = sharedPreferences.getString(key, getString(R.string.defaultPrefPolling));
-                    Poller.pollDelayMs = (long) (1000.0f * Float.parseFloat(pollingDelayStr.split(" ")[0]));
-                } else if (key.equals(getString(R.string.settingsIdTimeout))) {
-                    String timeoutStr = sharedPreferences.getString(key, getString(R.string.defaultPrefTimeout));
-                    Network.setTimeoutMs((int) (1000.0f * Float.parseFloat(timeoutStr.split(" ")[0])));
-                } else if (key.equals(getString(R.string.settingsIdDarktheme))) {
-                    MainActivity.darkTheme = sharedPreferences.getBoolean(key, true);
-                    MainActivity.themeChanged = true;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        recreate();
-                    } else {
-                        // recreate not available below android 3.0, doing workaround
-                        Intent intent = getIntent();
-                        finish();
-                        startActivity(intent);
-                    }
-                } else if (key.equals(getString(R.string.settingsIdTimerformat))) {
-                    String format = sharedPreferences.getString(key, getString(R.string.defaultPrefTimerformat));
-                    Timer.setFormatting(format);
-                } else if (key.equals(getString(R.string.settingsIdVibrate))) {
-                    MainActivity.vibrationEnabled = sharedPreferences.getBoolean(key, true);
+                if (input.isEmpty()) {
+                    Toast.makeText(SettingsActivity.this, R.string.ipSyntaxError, Toast.LENGTH_SHORT).show();
+                    getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefListener);
+                    sharedPreferences.edit().putString(key, lastIp).apply();
+                    getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);
                 }
 
-                updatePreferenceSummaryTexts();
+                // Network has to be on non-UI thread
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            Network.setIp(InetAddress.getByName(input));
+                            lastIp = input;
+                        } catch (UnknownHostException ignored) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(SettingsActivity.this, R.string.ipSyntaxError, Toast.LENGTH_SHORT).show();
+                                getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefListener);
+                                sharedPreferences.edit().putString(key, lastIp).apply();
+                                getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);
+                            });
+                        }
+                    }
+                }.start();
+            } else if (key.equals(getString(R.string.settingsIdPort))) {
+                final String portInput = sharedPreferences.getString(key, getString(R.string.defaultPrefPort));
+                try {
+                    int port = Integer.parseInt(portInput);
+                    if (port < 1 || port > 65535) {
+                        throw new NumberFormatException("Number is out of valid port range");
+                    }
+                    Network.setPort(port);
+                    lastPort = portInput;
+                } catch (NumberFormatException ignored) {
+                    getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefListener);
+                    sharedPreferences.edit().putString(key, lastPort).apply();
+                    getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);
+
+                    runOnUiThread(() -> Toast.makeText(SettingsActivity.this, getString(R.string.portSyntaxError, portInput), Toast.LENGTH_SHORT).show());
+                }
+            } else if (key.equals(getString(R.string.settingsIdPolldelay))) {
+                String pollingDelayStr = sharedPreferences.getString(key, getString(R.string.defaultPrefPolling));
+                Poller.pollDelayMs = (long) (1000.0f * Float.parseFloat(pollingDelayStr.split(" ")[0]));
+            } else if (key.equals(getString(R.string.settingsIdTimeout))) {
+                String timeoutStr = sharedPreferences.getString(key, getString(R.string.defaultPrefTimeout));
+                Network.setTimeoutMs((int) (1000.0f * Float.parseFloat(timeoutStr.split(" ")[0])));
+            } else if (key.equals(getString(R.string.settingsIdDarktheme))) {
+                MainActivity.darkTheme = sharedPreferences.getBoolean(key, true);
+                MainActivity.themeChanged = true;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    recreate();
+                } else {
+                    // recreate not available below android 3.0, doing workaround
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                }
+            } else if (key.equals(getString(R.string.settingsIdTimerformat))) {
+                String format = sharedPreferences.getString(key, getString(R.string.defaultPrefTimerformat));
+                Timer.setFormatting(format);
+            } else if (key.equals(getString(R.string.settingsIdVibrate))) {
+                MainActivity.vibrationEnabled = sharedPreferences.getBoolean(key, true);
             }
+
+            updatePreferenceSummaryTexts();
         };
 
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefListener);

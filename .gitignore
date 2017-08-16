@@ -34,3 +34,5 @@ captures/
 
 # Keystore files
 *.jks
+
+/app/release/output.json

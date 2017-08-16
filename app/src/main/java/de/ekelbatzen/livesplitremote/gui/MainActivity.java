@@ -38,6 +38,11 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private static final long VIBRATION_TIME = 100L;
     private static final long OFFLINE_TOAST_COOLDOWN_MS = 10000L;
     private static final String TAG = MainActivity.class.getName();
+
+    public static boolean darkTheme;
+    public static boolean themeChanged;
+    public static boolean vibrationEnabled;
+
     private TimerState timerState;
     private TextView info;
     private Button startSplitButton;
@@ -54,11 +59,9 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     private boolean cmdRequestActive;
     private boolean pollActive;
     private Vibrator vibrator;
-    public static boolean darkTheme;
-    public static boolean themeChanged;
-    public static boolean vibrationEnabled;
     private boolean foundSavedIp;
     private boolean foundSavedPort;
+    private boolean hasStartedBefore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +101,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             public void onResponse(String response) {
                 cmdRequestActive = false;
                 if (!pollActive) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            networkIndicator.setVisibility(View.INVISIBLE);
-                        }
-                    });
+                    runOnUiThread(() -> networkIndicator.setVisibility(View.INVISIBLE));
                 }
                 if (poller != null) {
                     poller.instantPoll();
@@ -114,16 +112,16 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             public void onError() {
                 cmdRequestActive = false;
                 if (!pollActive) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            networkIndicator.setVisibility(View.INVISIBLE);
-                        }
-                    });
+                    runOnUiThread(() -> networkIndicator.setVisibility(View.INVISIBLE));
                 }
                 onServerWentOffline();
             }
         };
+
+        if(!hasStartedBefore){
+            //It is the first app start
+            GuideDialog.askForGuide(this);
+        }
     }
 
     private void readPreferences() {
@@ -142,20 +140,10 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                         Network.setIp(InetAddress.getByName(savedIP));
                         foundSavedIp = true;
                         if(foundSavedPort){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort()));
-                                }
-                            });
+                            runOnUiThread(() -> info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort())));
                         }
                     } catch (UnknownHostException ignored) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, R.string.ipParseError, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.ipParseError, Toast.LENGTH_SHORT).show());
                     }
                 }
             }.start();
@@ -168,20 +156,10 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                     Network.setPort(Integer.parseInt(prefs.getString(getString(R.string.settingsIdPort), getString(R.string.defaultPrefPort))));
                     foundSavedPort = true;
                     if(foundSavedIp){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort()));
-                            }
-                        });
+                        runOnUiThread(() -> info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort())));
                     }
                 } catch (Exception ignored) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, R.string.portParseError, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.portParseError, Toast.LENGTH_SHORT).show());
                 }
             }
         }.start();
@@ -190,58 +168,53 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             String pollingDelayStr = prefs.getString(getString(R.string.settingsIdPolldelay), getString(R.string.defaultPrefPolling));
             Poller.pollDelayMs = (long) (1000.0f * Float.parseFloat(pollingDelayStr.split(" ")[0]));
         } catch (Exception ignored) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, R.string.pollingParseError, Toast.LENGTH_SHORT).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.pollingParseError, Toast.LENGTH_SHORT).show());
         }
 
         try {
             String networkTimeoutStr = prefs.getString(getString(R.string.settingsIdTimeout), getString(R.string.defaultPrefTimeout));
             Network.setTimeoutMs((int) (1000.0f * Float.parseFloat(networkTimeoutStr.split(" ")[0])));
         } catch (Exception ignored) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, R.string.timeoutParseError, Toast.LENGTH_SHORT).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.timeoutParseError, Toast.LENGTH_SHORT).show());
         }
 
         try {
             darkTheme = prefs.getBoolean(getString(R.string.settingsIdDarktheme), true);
         } catch (Exception ignored) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, R.string.themeParseError, Toast.LENGTH_SHORT).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.themeParseError, Toast.LENGTH_SHORT).show());
         }
 
         try {
             String timerFormat = prefs.getString(getString(R.string.settingsIdTimerformat), getString(R.string.defaultPrefTimerformat));
             Timer.setFormatting(timerFormat);
         } catch (Exception ignored) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, R.string.timerFormatParseError, Toast.LENGTH_SHORT).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.timerFormatParseError, Toast.LENGTH_SHORT).show());
         }
 
         try {
             vibrationEnabled = prefs.getBoolean(getString(R.string.settingsIdVibrate), true);
         } catch (Exception ignored) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, R.string.vibrationParseError, Toast.LENGTH_SHORT).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.vibrationParseError, Toast.LENGTH_SHORT).show());
+        }
+
+        try {
+            hasStartedBefore = prefs.getBoolean(getString(R.string.settingsIdFirstStart), false);
+
+            // User may be new or patched from previous app version
+            if(!hasStartedBefore){
+                // Check if user has any settings, if he does, it is not the first start
+                if(prefs.contains(getString(R.string.settingsIdDarktheme))) hasStartedBefore = true;
+                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdVibrate))) hasStartedBefore = true;
+                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdIp))) hasStartedBefore = true;
+                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdPolldelay))) hasStartedBefore = true;
+                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdPort))) hasStartedBefore = true;
+                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdTimeout))) hasStartedBefore = true;
+                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdTimerformat))) hasStartedBefore = true;
+            }
+
+            prefs.edit().putBoolean(getString(R.string.settingsIdFirstStart), true).apply();
+        } catch (Exception ignored) {
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.firstStartParseError, Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -254,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.getItem(2).setEnabled(Network.hasIp() && timerState != TimerState.ERROR);
+        menu.getItem(3).setEnabled(Network.hasIp() && timerState != TimerState.ERROR);
 
         return true;
     }
@@ -264,6 +237,9 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.menu_guide:
+                new GuideDialog(this);
                 return true;
             case R.id.menu_info:
                 showInfo();
@@ -295,12 +271,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             @Override
             public void run() {
                 cmdRequestActive = true;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        networkIndicator.setVisibility(View.VISIBLE);
-                    }
-                });
+                runOnUiThread(() -> networkIndicator.setVisibility(View.VISIBLE));
                 try {
                     Network.openConnection();
                 } catch (IOException e) {
@@ -308,12 +279,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 }
                 cmdRequestActive = false;
                 if (!pollActive) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            networkIndicator.setVisibility(View.INVISIBLE);
-                        }
-                    });
+                    runOnUiThread(() -> networkIndicator.setVisibility(View.INVISIBLE));
                 }
             }
         }.start();
@@ -379,12 +345,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             timer.setMs(lsTime);
         } else {
             // Bug on LiveSplit server when using game time comparison, ignore synchronization until fixed
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, R.string.gameTimeBug, Toast.LENGTH_SHORT).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, R.string.gameTimeBug, Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -414,100 +375,85 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     @Override
     public void onPollStart() {
         pollActive = true;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                networkIndicator.setVisibility(View.VISIBLE);
-            }
-        });
+        runOnUiThread(() -> networkIndicator.setVisibility(View.VISIBLE));
     }
 
     @Override
     public void onPollEnd() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (Network.hasIp()) {
-                    if (timerState == TimerState.ERROR) {
-                        info.setText(getString(R.string.ipNotReachedInfo, Network.getIp().getHostAddress(), Network.getPort()));
-                        if (System.currentTimeMillis() - timestampLastOfflineToast > OFFLINE_TOAST_COOLDOWN_MS && isActive) {
-                            offlineToast = Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG);
-                            offlineToast.show();
-                            timestampLastOfflineToast = System.currentTimeMillis();
-                        }
-                    } else {
-                        info.setText(getString(R.string.displayIpConnected, Network.getIp().getHostAddress(), Network.getPort()));
+        runOnUiThread(() -> {
+            if (Network.hasIp()) {
+                if (timerState == TimerState.ERROR) {
+                    info.setText(getString(R.string.ipNotReachedInfo, Network.getIp().getHostAddress(), Network.getPort()));
+                    if (System.currentTimeMillis() - timestampLastOfflineToast > OFFLINE_TOAST_COOLDOWN_MS && isActive) {
+                        offlineToast = Toast.makeText(MainActivity.this, R.string.ipNotReached, Toast.LENGTH_LONG);
+                        offlineToast.show();
+                        timestampLastOfflineToast = System.currentTimeMillis();
                     }
                 } else {
-                    info.setText(R.string.serverIpNotSet);
+                    info.setText(getString(R.string.displayIpConnected, Network.getIp().getHostAddress(), Network.getPort()));
                 }
+            } else {
+                info.setText(R.string.serverIpNotSet);
+            }
 
-                pollActive = false;
-                if (!cmdRequestActive) {
-                    networkIndicator.setVisibility(View.INVISIBLE);
-                }
+            pollActive = false;
+            if (!cmdRequestActive) {
+                networkIndicator.setVisibility(View.INVISIBLE);
             }
         });
     }
 
     @Override
     public void onProblem(final String msg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (isActive) {
-                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
-                }
+        runOnUiThread(() -> {
+            if (isActive) {
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void updateGuiToTimerstate() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                switch (timerState) {
-                    case NOT_RUNNING:
-                        startSplitButton.setEnabled(true);
-                        undoButton.setEnabled(false);
-                        skipButton.setEnabled(false);
-                        pauseButton.setEnabled(false);
-                        startSplitButton.setText(R.string.startTimer);
-                        break;
-                    case RUNNING:
-                        startSplitButton.setEnabled(true);
-                        undoButton.setEnabled(true);
-                        skipButton.setEnabled(true);
-                        pauseButton.setEnabled(true);
-                        startSplitButton.setText(R.string.splitText);
-                        break;
-                    case ENDED:
-                        startSplitButton.setEnabled(false);
-                        undoButton.setEnabled(true);
-                        skipButton.setEnabled(false);
-                        pauseButton.setEnabled(false);
-                        startSplitButton.setText(R.string.timeFinishedText);
-                        break;
-                    case PAUSED:
-                        startSplitButton.setEnabled(true);
-                        undoButton.setEnabled(true);
-                        skipButton.setEnabled(true);
-                        pauseButton.setEnabled(false);
-                        startSplitButton.setText(R.string.resumeText);
-                        break;
-                    case ERROR:
-                        startSplitButton.setEnabled(false);
-                        undoButton.setEnabled(false);
-                        skipButton.setEnabled(false);
-                        pauseButton.setEnabled(false);
-                        break;
-                }
-
-                invalidateOptionsMenu();
+        runOnUiThread(() -> {
+            switch (timerState) {
+                case NOT_RUNNING:
+                    startSplitButton.setEnabled(true);
+                    undoButton.setEnabled(false);
+                    skipButton.setEnabled(false);
+                    pauseButton.setEnabled(false);
+                    startSplitButton.setText(R.string.startTimer);
+                    break;
+                case RUNNING:
+                    startSplitButton.setEnabled(true);
+                    undoButton.setEnabled(true);
+                    skipButton.setEnabled(true);
+                    pauseButton.setEnabled(true);
+                    startSplitButton.setText(R.string.splitText);
+                    break;
+                case ENDED:
+                    startSplitButton.setEnabled(false);
+                    undoButton.setEnabled(true);
+                    skipButton.setEnabled(false);
+                    pauseButton.setEnabled(false);
+                    startSplitButton.setText(R.string.timeFinishedText);
+                    break;
+                case PAUSED:
+                    startSplitButton.setEnabled(true);
+                    undoButton.setEnabled(true);
+                    skipButton.setEnabled(true);
+                    pauseButton.setEnabled(false);
+                    startSplitButton.setText(R.string.resumeText);
+                    break;
+                case ERROR:
+                    startSplitButton.setEnabled(false);
+                    undoButton.setEnabled(false);
+                    skipButton.setEnabled(false);
+                    pauseButton.setEnabled(false);
+                    break;
             }
+
+            invalidateOptionsMenu();
         });
     }
-
 
     private void showInfo() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -1,3 +1,7 @@
+0.4.0: (August 16th 2017)
+- Included the GitHub guide
+- Updated icon
+
 0.3.8: (May 23rd 2017)
 - Fixed possible crash when in.readLine() responded null to a network request
 - Enabled ProGuard to optimize and shrink the .apk

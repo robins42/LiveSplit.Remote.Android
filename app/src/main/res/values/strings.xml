@@ -8,6 +8,7 @@
     <string name="settingsIdDarktheme">DarkTheme</string>
     <string name="settingsIdTimerformat">TimerFormat</string>
     <string name="settingsIdVibrate">VibrationEnabled</string>
+    <string name="settingsIdFirstStart">FirstStart</string>
     <string name="defaultPrefPolling">2 s</string>
     <string name="defaultPrefTimeout">3 s</string>
     <string name="defaultPrefPort">16834</string>
@@ -22,6 +23,7 @@
     <string name="themeParseError">Error reading saved theme setting</string>
     <string name="vibrationParseError">Error reading saved vibration setting</string>
     <string name="timerFormatParseError">Error reading saved timer format setting</string>
+    <string name="firstStartParseError">Error reading setting if this is the first app start</string>
     <string name="ipSyntaxError">IP syntax is not valid</string>
     <string name="portSyntaxError">Port %1$s is not valid</string>
     <string name="ipNotReached">Server unavailable.\nHave you configured it in the layout\nand started it via Control > Start Server?</string>
@@ -32,7 +34,7 @@
     <string name="errorSocketOpen">Could not open network socket</string>
     <string name="networkHiccup">The network can\'t keep up with the requests and messes up!\nMaybe you need to increase the polling delay.</string>
 
-    <string name="prefPollingSummary">Time between automatic updates.\nLower values may drain your battery faster.</string>
+    <string name="prefPollingSummary">Time between automatic timer synchronization.\nLower values may drain your battery faster.</string>
     <string name="prefTimeoutSummary">Time to wait until deciding that something went wrong</string>
     <string name="prefTimerformatSummary">How the time is displayed</string>
 
@@ -50,5 +52,23 @@
     <string name="menuInfo">Infos</string>
     <string name="infosTitle">Infos</string>
     <string name="infosCancel">OK</string>
-    <string name="infosMsg">This is a remote for the timer program <a href="https://github.com/LiveSplit/LiveSplit">LiveSplit</a>.\n\nIn order to work you need to add\n<b>Control > LiveSplit Server</b> to your layout and then start the server on the main window with\n<b>Rightclick > Control > Start Server</b>.\n\nDevelopment continues on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android">GitHub</a>.\n\nIf you want to contact me:\n- <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android/issues">GitHub</a>\n- <a href="https://discord.gg/N6wv8pW">Speedrun Tool Development Discord</a>\n- <a href="mailto:robin.schonborn@gmail.com">Email</a></string>
+    <string name="infosMsg">This is a remote for the timer program <a href="https://github.com/LiveSplit/LiveSplit">LiveSplit</a>.\n\nIn order to work you need to add\n<b>Control > LiveSplit Server</b> to your layout and then start the server on the main window with\n<b>Rightclick > Control > Start Server</b>.\n\nThe app requires an IP to know where to connect to your LiveSplit computer.\n\nDevelopment continues on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android">GitHub</a>.\n\nIf you want to contact me:\n- <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android/issues">GitHub</a>\n- <a href="https://discord.gg/N6wv8pW">Speedrun Tool Development Discord</a>\n- <a href="mailto:robin.schonborn@gmail.com">Email</a></string>
+    <string name="menuGuide">Guide</string>
+
+    <string name="guide_first_time_title">Show guide?</string>
+    <string name="guide_first_time_msg">This seems to be your first app start,\ndo you want to see a guide on how to set LiveSplit up with this app?\n\nThe guide is also accessible from the menu.</string>
+    <string name="guide_first_time_cancel">Cancel</string>
+    <string name="guide_first_time_agree">Show guide</string>
+    <string name="guide_title">Guide (%1$d / %2$d)</string>
+    <string name="guide_image_image_description">Guide image</string>
+    <string name="guide_button_previous">Previous</string>
+    <string name="guide_button_next">Next</string>
+    <string name="guide_text_page_1"><![CDATA[This guide will show you how to set up LiveSplit to work with this app.<br/><br/>It is also available on <a href="https://github.com/Ekelbatzen/LiveSplit.Remote.Android/blob/master/README.md">GitHub</a>.<br/><br/>It is recommended to open the guide on your LiveSplit computer, so you can just click on the links there.]]></string>
+    <string name="guide_text_page_2"><![CDATA[Download and extract LiveSplit 1.7 or newer: <br/><br/><a href="http://livesplit.org/downloads/">http://livesplit.org/downloads/</a>]]></string>
+    <string name="guide_text_page_3"><![CDATA[Download and extract the LiveSplit server component (LiveSplit.Server_1.7.x.zip or newer) into the LiveSplit \"components\" sub-directory:<br/><br/><a href="https://github.com/LiveSplit/LiveSplit.Server/releases">https://github.com/LiveSplit/LiveSplit.Server/releases</a>]]></string>
+    <string name="guide_text_page_4">Start LiveSplit, open your layout</string>
+    <string name="guide_text_page_5">Add the LiveSplit Server component to your layout</string>
+    <string name="guide_text_page_6"><![CDATA[Note your IP, you will need it for the app (You may also change port if necessary).<br/><br/>(This IP is needed so the app knows how to connect to your LiveSplit computer.)]]></string>
+    <string name="guide_text_page_7">Start the server (Windows may ask for firewall permissions, you have to allow it)</string>
+    <string name="guide_text_page_8">Go to the app settings and enter your IP (and port if you changed it)</string>
 </resources>

@@ -28,34 +28,36 @@ LiveSplit Android Remote is an app to control [LiveSplit](https://github.com/Liv
 ## Setup ##
 
 1. Download and install the current app version from Google Play (Click on the Google Play Button above to get there)<br/><br/>or<br/><br/>download any current/previous .apk from the apk folder here on GitHub. (You may have to allow apps from unknown sources in your phone security/developer settings. Older versions may not work as well for obvious reasons.)
-2. Use the latest Development Build of LiveSplit : http://livesplit.org/downloads/
+2. Download and extract LiveSplit 1.7 or newer: http://livesplit.org/downloads/
 	<p align="center">
-		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_1.png" alt="Setup step 1"/>
+		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/app/src/main/res/drawable/guide_1.png" alt="Setup step 2"/>
     </p>
-3. Open your layout
+    
+3. Download and extract the LiveSplit server component (LiveSplit.Server_1.7.x.zip or newer) into the LiveSplit "components" sub-directory: https://github.com/LiveSplit/LiveSplit.Server/releases
+	<p align="center">
+		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/app/src/main/res/drawable/guide_2.png" alt="Setup step 3"/>
+    </p>
+    
+4. Start LiveSplit, open your layout
     <p align="center">
-		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_2.png" alt="Setup step 2"/>
+		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/app/src/main/res/drawable/guide_3.png" alt="Setup step 4"/>
 	</p>
-4. Add the LiveSplit Server component to your layout
+5. Add the LiveSplit Server component to your layout
 	<p align="center">
-		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_3.png" alt="Setup step 3"/>
+		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/app/src/main/res/drawable/guide_4.png" alt="Setup step 5"/>
 	</p>
-5. Note your IP, you will need it for the app (You may also change port if necessary)
+6. Note your IP, you will need it for the app (You may also change port if necessary). (This IP is needed so the app knows how to connect to your LiveSplit computer.)
 	<p align="center">
-		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_4.png" alt="Setup step 4"/>
+		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/app/src/main/res/drawable/guide_5.png" alt="Setup step 6"/>
 	</p>
-6. Start the server
+7. Start the server (Windows may ask for firewall permissions, you have to allow it)
 	<p align="center">
-		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_5.png" alt="Setup step 5"/>
+		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/app/src/main/res/drawable/guide_6.png" alt="Setup step 7"/>
 	</p>
 
-7. Go to app settings
+8. Go to the app settings and enter your IP (and port if you changed it)
 	<p align="center">
-		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_6.png" alt="Setup step 6"/>
-	</p>
-8. Enter your IP (and port if you changed it)
-	<p align="center">
-		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/pictures/guide_7.png" alt="Setup step 7"/>
+		<img src="https://raw.githubusercontent.com/Ekelbatzen/LiveSplit.Remote.Android/master/app/src/main/res/drawable/guide_7.png" alt="Setup step 8"/>
 	</p>
 
 (You can also use your public IP to access the server via internet, but you will have to forward that port in your router)
