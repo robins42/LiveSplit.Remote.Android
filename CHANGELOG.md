@@ -1,3 +1,6 @@
+0.4.1: (July 4th 2018)
+- Fixed timer formatting for runs longer than 1 hour 
+
 0.4.0: (August 16th 2017)
 - Included the GitHub guide
 - Updated icon
