@@ -122,35 +122,36 @@ public class Timer extends AppCompatTextView {
         long allSeconds = ms / 1000L;
         long hours = 0L;
         long minutes = 0L;
+        long seconds = 0L;
         StringBuilder displayedTime = new StringBuilder(11);
 
         if (hEnabled) {
             hours = allSeconds / (60L * 60L);
             if (!hOptional || hours > 0L) {
                 displayedTime.append(String.format(Locale.ENGLISH, "%02d", hours));
+                displayedTime.append(':');
             }
         }
+
         if (mEnabled) {
             if (hEnabled && (!hOptional || hours > 0L)) {
-                displayedTime.append(':');
                 minutes = (allSeconds / 60L) % 60L;
             } else {
                 minutes = allSeconds / 60L;
             }
 
-            if (!mOptional || minutes > 0L) {
+            if (!mOptional || minutes > 0L || hours > 0L) {
                 displayedTime.append(String.format(Locale.ENGLISH, "%02d", minutes));
+                displayedTime.append(':');
             }
         }
 
-        String seconds;
-        if (mEnabled && (!mOptional || minutes > 0L)) {
-            displayedTime.append(':');
-            seconds = String.format(Locale.ENGLISH, "%02d", allSeconds % 60L);
+        if (mEnabled) {
+            seconds = allSeconds % 60L;
         } else {
-            seconds = String.format(Locale.ENGLISH, "%02d", allSeconds);
+            seconds = allSeconds;
         }
-        displayedTime.append(seconds);
+        displayedTime.append(String.format(Locale.ENGLISH, "%02d", seconds));
 
         String msShort = "";
         if (msDigits == 1) {

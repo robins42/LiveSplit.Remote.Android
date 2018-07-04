@@ -8,8 +8,8 @@ android {
         applicationId "de.ekelbatzen.livesplit.remote"
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 18
-        versionName "0.4.0"
+        versionCode 19
+        versionName "0.4.1"
     }
     buildTypes {
         debug {
