@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Server">
-        <EditTextPreference
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory android:title="Server">
+        <androidx.preference.EditTextPreference
             android:key="@string/settingsIdIp"
             android:persistent="true"
             android:title="IP" />
 
-        <EditTextPreference
+        <androidx.preference.EditTextPreference
             android:defaultValue="16834"
             android:key="@string/settingsIdPort"
             android:persistent="true"
             android:title="Port" />
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <PreferenceCategory android:title="Graphics">
-        <CheckBoxPreference
+    <androidx.preference.PreferenceCategory android:title="Graphics">
+        <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settingsIdDarktheme"
             android:title="Dark theme" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
             android:defaultValue="[HH:][mm:]ss.SS"
             android:entries="@array/timerFormatReadable"
             android:entryValues="@array/timerFormatSystem"
@@ -28,14 +28,14 @@
             android:summary="@string/prefTimerformatSummary"
             android:title="Timer format" />
 
-        <CheckBoxPreference
+        <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/settingsIdVibrate"
             android:title="Vibration" />
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <PreferenceCategory android:title="Network">
-        <ListPreference
+    <androidx.preference.PreferenceCategory android:title="Network">
+        <androidx.preference.ListPreference
             android:defaultValue="2 s"
             android:entries="@array/pollingDelaysReadable"
             android:entryValues="@array/pollingDelaysSystem"
@@ -44,7 +44,7 @@
             android:summary="@string/prefPollingSummary"
             android:title="Polling delay" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
             android:defaultValue="3 s"
             android:entries="@array/networkTimeoutsReadable"
             android:entryValues="@array/networkTimeoutsSystem"
@@ -52,5 +52,5 @@
             android:persistent="true"
             android:summary="@string/prefTimeoutSummary"
             android:title="Network timeout" />
-    </PreferenceCategory>
-</PreferenceScreen>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

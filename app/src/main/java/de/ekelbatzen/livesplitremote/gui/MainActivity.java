@@ -4,12 +4,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +18,9 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             }
         };
 
-        if(!hasStartedBefore){
+        if (!hasStartedBefore) {
             //It is the first app start
             GuideDialog.askForGuide(this);
         }
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                     try {
                         Network.setIp(InetAddress.getByName(savedIP));
                         foundSavedIp = true;
-                        if(foundSavedPort){
+                        if (foundSavedPort) {
                             runOnUiThread(() -> info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort())));
                         }
                     } catch (UnknownHostException ignored) {
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
                 try {
                     Network.setPort(Integer.parseInt(prefs.getString(getString(R.string.settingsIdPort), getString(R.string.defaultPrefPort))));
                     foundSavedPort = true;
-                    if(foundSavedIp){
+                    if (foundSavedIp) {
                         runOnUiThread(() -> info.setText(getString(R.string.displayIpAppstart, Network.getIp().getHostAddress(), Network.getPort())));
                     }
                 } catch (Exception ignored) {
@@ -201,15 +201,22 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             hasStartedBefore = prefs.getBoolean(getString(R.string.settingsIdFirstStart), false);
 
             // User may be new or patched from previous app version
-            if(!hasStartedBefore){
+            if (!hasStartedBefore) {
                 // Check if user has any settings, if he does, it is not the first start
-                if(prefs.contains(getString(R.string.settingsIdDarktheme))) hasStartedBefore = true;
-                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdVibrate))) hasStartedBefore = true;
-                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdIp))) hasStartedBefore = true;
-                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdPolldelay))) hasStartedBefore = true;
-                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdPort))) hasStartedBefore = true;
-                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdTimeout))) hasStartedBefore = true;
-                if(!hasStartedBefore && prefs.contains(getString(R.string.settingsIdTimerformat))) hasStartedBefore = true;
+                if (prefs.contains(getString(R.string.settingsIdDarktheme)))
+                    hasStartedBefore = true;
+                if (!hasStartedBefore && prefs.contains(getString(R.string.settingsIdVibrate)))
+                    hasStartedBefore = true;
+                if (!hasStartedBefore && prefs.contains(getString(R.string.settingsIdIp)))
+                    hasStartedBefore = true;
+                if (!hasStartedBefore && prefs.contains(getString(R.string.settingsIdPolldelay)))
+                    hasStartedBefore = true;
+                if (!hasStartedBefore && prefs.contains(getString(R.string.settingsIdPort)))
+                    hasStartedBefore = true;
+                if (!hasStartedBefore && prefs.contains(getString(R.string.settingsIdTimeout)))
+                    hasStartedBefore = true;
+                if (!hasStartedBefore && prefs.contains(getString(R.string.settingsIdTimerformat)))
+                    hasStartedBefore = true;
             }
 
             prefs.edit().putBoolean(getString(R.string.settingsIdFirstStart), true).apply();
@@ -288,14 +295,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
         if (themeChanged) {
             themeChanged = false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                recreate();
-            } else {
-                // recreate not available below android 3.0, doing workaround
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            }
+            recreate();
         }
     }
 
@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             poller = null;
         }
 
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 Network.closeConnection();
@@ -474,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     }
 
     private void vibrate() {
-        if(!vibrationEnabled) return;
+        if (!vibrationEnabled) return;
 
         if (vibrator == null) {
             vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -482,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         // Below Android 3.0 getSystemService returns null if no vibrator is available
         if (vibrator != null) {
             // hasVibrator check is only available since Android 3.0
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && vibrator.hasVibrator()) {
+            if (vibrator.hasVibrator()) {
                 vibrator.vibrate(VIBRATION_TIME);
             }
         }

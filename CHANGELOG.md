@@ -1,3 +1,10 @@
+0.5.1: (August 25th 2020)
+- Updated "settings" dependencies
+
+0.5.0: (August 23rd 2020)
+- Increased minimum supported Android version from API 9 (Android 2.3) to API 14 (Android 4.0). According to statistics, no user is using an older device
+- Updated dependencies
+
 0.4.1: (July 4th 2018)
 - Fixed timer formatting for runs longer than 1 hour 
 
