@@ -162,4 +162,8 @@ public class Network extends AsyncTask<String, String, String> {
             }
         }
     }
+
+    public static void runInThread(Runnable action) {
+        new Thread(action).start();
+    }
 }

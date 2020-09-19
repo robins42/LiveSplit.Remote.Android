@@ -13,27 +13,6 @@
             android:title="Port" />
     </androidx.preference.PreferenceCategory>
 
-    <androidx.preference.PreferenceCategory android:title="Graphics">
-        <androidx.preference.CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/settingsIdDarktheme"
-            android:title="Dark theme" />
-
-        <androidx.preference.ListPreference
-            android:defaultValue="[HH:][mm:]ss.SS"
-            android:entries="@array/timerFormatReadable"
-            android:entryValues="@array/timerFormatSystem"
-            android:key="@string/settingsIdTimerformat"
-            android:persistent="true"
-            android:summary="@string/prefTimerformatSummary"
-            android:title="Timer format" />
-
-        <androidx.preference.CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/settingsIdVibrate"
-            android:title="Vibration" />
-    </androidx.preference.PreferenceCategory>
-
     <androidx.preference.PreferenceCategory android:title="Network">
         <androidx.preference.ListPreference
             android:defaultValue="2 s"
@@ -52,5 +31,26 @@
             android:persistent="true"
             android:summary="@string/prefTimeoutSummary"
             android:title="Network timeout" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory android:title="Other">
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settingsIdDarktheme"
+            android:title="Dark theme" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="[HH:][mm:]ss.SS"
+            android:entries="@array/timerFormatReadable"
+            android:entryValues="@array/timerFormatSystem"
+            android:key="@string/settingsIdTimerformat"
+            android:persistent="true"
+            android:summary="@string/prefTimerformatSummary"
+            android:title="Timer format" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/settingsIdVibrate"
+            android:title="Vibration" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

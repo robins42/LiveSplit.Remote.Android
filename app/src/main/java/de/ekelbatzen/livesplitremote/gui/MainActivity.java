@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import de.ekelbatzen.livesplitremote.R;
+import de.ekelbatzen.livesplitremote.gui.settings.SettingsActivity;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.PollUpdateListener;

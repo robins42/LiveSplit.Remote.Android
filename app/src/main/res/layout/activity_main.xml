@@ -31,9 +31,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="8dp"
         android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp">
 
         <!-- Spacer to avoid nested weights in LinearLayouts -->
         <View
@@ -47,8 +47,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/startSpacer"
-            android:text="@string/startTimer"
             android:onClick="StartSplitClicked"
+            android:text="@string/startTimer"
             android:textSize="40sp" />
 
         <LinearLayout
@@ -84,8 +84,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@id/undoSkipSpacer"
-                    android:text="@string/undoSplit"
                     android:onClick="UndoClicked"
+                    android:text="@string/undoSplit"
                     android:textSize="30sp" />
 
                 <Button
@@ -93,8 +93,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_toRightOf="@id/undoSkipSpacer"
-                    android:text="@string/skipSplit"
                     android:onClick="SkipClicked"
+                    android:text="@string/skipSplit"
                     android:textSize="30sp" />
             </RelativeLayout>
 
@@ -103,8 +103,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/pauseTimer"
                 android:onClick="PauseClicked"
+                android:text="@string/pauseTimer"
                 android:textSize="30sp" />
         </LinearLayout>
     </RelativeLayout>

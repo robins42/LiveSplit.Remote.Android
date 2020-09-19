@@ -1,10 +1,11 @@
-package de.ekelbatzen.livesplitremote.gui;
+package de.ekelbatzen.livesplitremote.gui.settings;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import de.ekelbatzen.livesplitremote.R;
+import de.ekelbatzen.livesplitremote.gui.MainActivity;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override
@@ -14,7 +15,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.settings_fragment, new SettingsFragment())
+                .replace(R.id.settings_fragment, new SettingsFragmentImpl())
                 .commit();
     }
 }
