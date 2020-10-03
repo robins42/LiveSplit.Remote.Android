@@ -1,3 +1,10 @@
+0.5.3: (Oktober 3rd 2020)
+- Refactored some general code
+
+0.5.2: (September 19th 2020)
+- Fixed settings being broken in 0.5.1
+- Refactored code for settings
+
 0.5.1: (August 25th 2020)
 - Updated "settings" dependencies
 

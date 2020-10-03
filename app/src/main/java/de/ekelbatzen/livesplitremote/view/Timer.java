@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote.gui;
+package de.ekelbatzen.livesplitremote.view;
 
 import android.content.Context;
 import android.graphics.Canvas;

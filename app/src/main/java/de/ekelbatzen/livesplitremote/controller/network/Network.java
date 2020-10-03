@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote.network;
+package de.ekelbatzen.livesplitremote.controller.network;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.Charset;
 
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 
@@ -23,6 +24,7 @@ public class Network extends AsyncTask<String, String, String> {
     private static Socket socket;
     private static OutputStreamWriter out;
     private static BufferedReader in;
+    private static Charset charset = Charset.forName("UTF-8");
     private final NetworkResponseListener listener;
     private boolean cmdSuccessful;
     private static final Object LOCK = new Object();
@@ -33,69 +35,90 @@ public class Network extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        String response = null;
-
+        String command = params[0];
         synchronized (LOCK) {
-            Log.v(TAG, "Sending " + params[0] + " to " + ip.getHostAddress() + ':' + port);
-            cmdSuccessful = false;
-            String cmd = params[0];
-            boolean listenForResponse = Boolean.parseBoolean(params[1]);
-
             try {
-                if (socket == null || !socket.isConnected()) {
-                    openConnection();
-                }
-                out.write(cmd + "\r\n");
-                out.flush();
-                if (listenForResponse) {
-                    response = in.readLine();
-                    cmdSuccessful = response != null;
-                } else {
-                    cmdSuccessful = true;
-                }
+                return sendCommand(params, command);
             } catch (SocketTimeoutException e) {
-                // Just print the short timeout message without printing stacktrace, not necessary to spam logcat
-                Log.w(TAG, "Got an exception trying to send " + cmd + " to " + ip + ':' + port + " - " + e.getMessage());
+                socketTimedOut(command, e);
             } catch (Exception e) {
-                Log.w(TAG, "Got an exception trying to send " + cmd + " to " + ip + ':' + port, e);
-                closeConnection();
-                try {
-                    openConnection();
-                } catch (IOException e1) {
-                    Log.w(TAG, "Got an exception after reopening connection after previous exception: ", e1);
-                }
+                genericException(command, e);
             }
         }
+    }
 
+    private String sendCommand(String[] params, String command) throws IOException {
+        Log.v(TAG, "Sending " + params[0] + " to " + ip.getHostAddress() + ':' + port);
+        String response = null;
+        boolean commandHasResponse = Boolean.parseBoolean(params[1]);
+        openConnectionIfNecessary();
+        sendCommand(command);
+        if (commandHasResponse) {
+            response = in.readLine();
+        }
+        cmdSuccessful = !commandHasResponse || response != null;
         return response;
+    }
+
+    private void socketTimedOut(String command, SocketTimeoutException e) {
+        // Just print the short timeout message without printing stacktrace, not necessary to spam logcat
+        handleException(command, e, false);
+    }
+
+    private void genericException(String command, Exception e) {
+        handleException(command, e, true);
+    }
+
+    private void handleException(String command, Exception e, boolean printStackTrace) {
+        cmdSuccessful = false;
+        String msg = "Got an exception, closing connection. " +
+                "Socket was rying to send " + command + " to " + ip + ':' + port + " - " + e.getMessage();
+        if (printStackTrace) {
+            Log.w(TAG, msg, e);
+        } else {
+            Log.w(TAG, msg);
+        }
+        closeConnection();
+    }
+
+    private void sendCommand(String cmd) throws IOException {
+        out.write(cmd + "\r\n");
+        out.flush();
+    }
+
+    private void openConnectionIfNecessary() throws IOException {
+        if (socket == null || !socket.isConnected()) {
+            openConnection();
+        }
     }
 
     @Override
     protected void onPostExecute(String result) {
         synchronized (LOCK) {
-            if (listener != null) {
-                if (cmdSuccessful) {
-                    listener.onResponse(result);
-                } else {
-                    listener.onError();
-                }
-            }
+            triggerListener(result);
+        }
+    }
+
+    private void triggerListener(String result) {
+        if (listener == null) {
+            return;
+        }
+        if (cmdSuccessful) {
+            listener.onResponse(result);
+        } else {
+            listener.onError();
         }
     }
 
     public static void openConnection() throws IOException {
         synchronized (LOCK) {
-            if (socket != null) {
-                closeConnection();
-            }
+            closeConnection();
 
-            if (socket == null) {
-                socket = new Socket();
-            }
+            socket = new Socket();
             socket.setSoTimeout(timeoutMs);
             socket.connect(new InetSocketAddress(ip, port), timeoutMs);
-            out = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+            out = new OutputStreamWriter(socket.getOutputStream(), charset);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), charset));
         }
     }
 

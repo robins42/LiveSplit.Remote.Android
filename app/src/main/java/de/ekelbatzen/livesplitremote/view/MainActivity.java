@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote.gui;
+package de.ekelbatzen.livesplitremote.view;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,13 +27,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import de.ekelbatzen.livesplitremote.R;
-import de.ekelbatzen.livesplitremote.gui.settings.SettingsActivity;
+import de.ekelbatzen.livesplitremote.view.settings.SettingsActivity;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
-import de.ekelbatzen.livesplitremote.network.Network;
-import de.ekelbatzen.livesplitremote.network.Poller;
+import de.ekelbatzen.livesplitremote.controller.network.Network;
+import de.ekelbatzen.livesplitremote.controller.network.Poller;
 
 public class MainActivity extends AppCompatActivity implements PollUpdateListener {
     private static final long VIBRATION_TIME = 100L;

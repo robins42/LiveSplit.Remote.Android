@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote.model;
+package de.ekelbatzen.livesplitremote.controller;
 
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -7,27 +7,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.ekelbatzen.livesplitremote.R;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChanger;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChangerIp;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChangerPollDelay;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChangerPort;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChangerTheme;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChangerTimeout;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChangerTimerFormat;
-import de.ekelbatzen.livesplitremote.gui.settings.changer.SettingChangerVibration;
+import de.ekelbatzen.livesplitremote.model.SettingsFragment;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChanger;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChangerIp;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChangerPollDelay;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChangerPort;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChangerTheme;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChangerTimeout;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChangerTimerFormat;
+import de.ekelbatzen.livesplitremote.view.settings.changer.SettingChangerVibration;
 
 public class SettingsChanger {
     private final SettingsFragment fragment;
     private final SettingChangerIp settingChangerIp;
     private final SettingChangerPort settingChangerPort;
     private final List<SettingChanger> settingChangers;
-    private String lastPort;
 
     public SettingsChanger(SettingsFragment fragment) {
         this.fragment = fragment;
         settingChangerIp = new SettingChangerIp(fragment);
         settingChangerPort = new SettingChangerPort(fragment);
         settingChangers = new ArrayList<>();
+        fillSettingsChangerList();
+    }
+
+    private void fillSettingsChangerList() {
         settingChangers.add(settingChangerIp);
         settingChangers.add(settingChangerPort);
         settingChangers.add(new SettingChangerPollDelay(fragment));
@@ -38,17 +42,13 @@ public class SettingsChanger {
     }
 
     public void onPropertyChanged(SharedPreferences sharedPreferences, String key) {
-        boolean wasKeyFound = false;
         for (SettingChanger settingChanger : settingChangers) {
             if (settingChanger.isPreferenceKey(key)) {
                 settingChanger.changeSetting(sharedPreferences, key);
-                wasKeyFound = true;
-                break;
+                return;
             }
         }
-        if (!wasKeyFound) {
-            Log.w(getClass().getName(), "Invalid preference key: " + key);
-        }
+        Log.w(getClass().getName(), "Invalid preference key found when trying to save preference: " + key);
     }
 
 

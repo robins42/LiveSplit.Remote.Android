@@ -1,11 +1,11 @@
-package de.ekelbatzen.livesplitremote.gui.settings;
+package de.ekelbatzen.livesplitremote.view.settings;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import de.ekelbatzen.livesplitremote.R;
-import de.ekelbatzen.livesplitremote.gui.MainActivity;
+import de.ekelbatzen.livesplitremote.view.MainActivity;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override

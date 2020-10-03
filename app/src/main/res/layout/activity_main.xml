@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="de.ekelbatzen.livesplitremote.gui.MainActivity">
+    tools:context="de.ekelbatzen.livesplitremote.view.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -57,7 +57,7 @@
             android:layout_below="@id/startSpacer"
             android:orientation="vertical">
 
-            <de.ekelbatzen.livesplitremote.gui.Timer
+            <de.ekelbatzen.livesplitremote.view.Timer
                 android:id="@+id/timer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

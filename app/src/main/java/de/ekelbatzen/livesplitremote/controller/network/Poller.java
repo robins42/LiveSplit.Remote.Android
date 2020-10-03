@@ -1,9 +1,9 @@
-package de.ekelbatzen.livesplitremote.network;
+package de.ekelbatzen.livesplitremote.controller.network;
 
 import android.util.Log;
 
 import de.ekelbatzen.livesplitremote.R;
-import de.ekelbatzen.livesplitremote.gui.MainActivity;
+import de.ekelbatzen.livesplitremote.view.MainActivity;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;

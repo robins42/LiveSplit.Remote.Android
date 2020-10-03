@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote.gui.settings;
+package de.ekelbatzen.livesplitremote.view.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import androidx.preference.DialogPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import de.ekelbatzen.livesplitremote.R;
-import de.ekelbatzen.livesplitremote.model.SettingsChanger;
+import de.ekelbatzen.livesplitremote.controller.SettingsChanger;
 import de.ekelbatzen.livesplitremote.model.SettingsFragment;
 
 public class SettingsFragmentImpl extends PreferenceFragmentCompat implements SettingsFragment {

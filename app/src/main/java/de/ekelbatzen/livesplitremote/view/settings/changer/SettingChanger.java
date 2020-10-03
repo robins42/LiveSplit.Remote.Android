@@ -1,4 +1,4 @@
-package de.ekelbatzen.livesplitremote.gui.settings.changer;
+package de.ekelbatzen.livesplitremote.view.settings.changer;
 
 import android.content.SharedPreferences;
 
@@ -26,7 +26,7 @@ public abstract class SettingChanger {
     static String getNonNullPreferenceString(SharedPreferences sharedPreferences, String key, String defaultString) {
         String preference = sharedPreferences.getString(key, defaultString);
         if (preference == null) {
-            return defaultString;
+            preference = defaultString;
         }
         return preference;
     }
