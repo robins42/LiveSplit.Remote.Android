@@ -8,6 +8,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_test_connection"
+        android:title="@string/menuConnectionTest"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_guide"
         android:title="@string/menuGuide"
         app:showAsAction="never" />
@@ -18,7 +23,7 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/menu_resettimer"
+        android:id="@+id/menu_reset_timer"
         android:title="@string/resetTimer"
         app:showAsAction="never" />
 </menu>

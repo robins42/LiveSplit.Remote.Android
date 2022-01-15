@@ -9,4 +9,8 @@
     <color name="darkColorPrimaryDark">#000000</color>
     <color name="darkColorAccent">#2DABCA</color>
     <color name="darkTimerColor">#FFFFFF</color>
+
+    <color name="connection_test_running">#CC3</color>
+    <color name="connection_test_success">#3C3</color>
+    <color name="connection_test_error">#C33</color>
 </resources>

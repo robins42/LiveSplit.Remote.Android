@@ -3,6 +3,8 @@
     package="de.ekelbatzen.livesplitremote">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -13,7 +15,7 @@
         android:supportsRtl="true">
         <activity
             android:name=".view.MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +24,10 @@
         </activity>
         <activity
             android:name=".view.settings.SettingsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
+        <activity
+            android:name=".view.ConnectionTestActivity"
+            android:screenOrientation="fullSensor" />
     </application>
 
 </manifest>

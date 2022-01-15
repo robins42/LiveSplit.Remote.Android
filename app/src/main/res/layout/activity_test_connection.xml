@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/connection_test_title"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/connection_test_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/connection_test_button" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#333" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#8888">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/connection_test_result_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/connection_test_result_title_start"
+                android:textAlignment="center"
+                android:textSize="18sp" />
+
+            <CheckBox
+                android:id="@+id/connection_test_1_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:inputType=""
+                android:text="@string/connection_test_1" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_1_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_1_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_2_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_2" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_2_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_2_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_3_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_3" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_3_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_3_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+
+            <CheckBox
+                android:id="@+id/connection_test_4_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_4" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_4_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_4_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_5_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_5" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_5_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_5_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_6_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_6" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_6_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_6_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_7_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_7" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_7_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_7_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_8_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_8" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_8_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_8_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_9_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_9" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_9_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_9_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_10_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_10" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_10_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_10_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_11_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_11" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_11_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_11_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_12_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_12" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_12_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_12_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+
+            <CheckBox
+                android:id="@+id/connection_test_13_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@string/connection_test_13" />
+
+            <ProgressBar
+                android:id="@+id/connection_test_13_progressbar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="-24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/connection_test_13_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/connection_test_info_not_run"
+                android:textColor="#A00" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

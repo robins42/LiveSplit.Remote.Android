@@ -24,7 +24,7 @@ public class Network extends AsyncTask<String, String, String> {
     private static Socket socket;
     private static OutputStreamWriter out;
     private static BufferedReader in;
-    private static Charset charset = Charset.forName("UTF-8");
+    private static final Charset charset = Charset.forName("UTF-8");
     private final NetworkResponseListener listener;
     private boolean cmdSuccessful;
     private static final Object LOCK = new Object();
@@ -44,6 +44,7 @@ public class Network extends AsyncTask<String, String, String> {
             } catch (Exception e) {
                 genericException(command, e);
             }
+            return null;
         }
     }
 

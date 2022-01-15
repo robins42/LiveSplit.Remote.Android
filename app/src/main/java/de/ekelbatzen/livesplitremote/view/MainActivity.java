@@ -27,13 +27,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import de.ekelbatzen.livesplitremote.R;
-import de.ekelbatzen.livesplitremote.view.settings.SettingsActivity;
+import de.ekelbatzen.livesplitremote.controller.network.Network;
+import de.ekelbatzen.livesplitremote.controller.network.Poller;
 import de.ekelbatzen.livesplitremote.model.LiveSplitCommand;
 import de.ekelbatzen.livesplitremote.model.NetworkResponseListener;
 import de.ekelbatzen.livesplitremote.model.PollUpdateListener;
 import de.ekelbatzen.livesplitremote.model.TimerState;
-import de.ekelbatzen.livesplitremote.controller.network.Network;
-import de.ekelbatzen.livesplitremote.controller.network.Poller;
+import de.ekelbatzen.livesplitremote.view.settings.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity implements PollUpdateListener {
     private static final long VIBRATION_TIME = 100L;
@@ -246,13 +246,16 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
             case R.id.menu_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
+            case R.id.menu_test_connection:
+                startActivity(new Intent(this, ConnectionTestActivity.class));
+                return true;
             case R.id.menu_guide:
                 new GuideDialog(this);
                 return true;
             case R.id.menu_info:
                 showInfo();
                 return true;
-            case R.id.menu_resettimer:
+            case R.id.menu_reset_timer:
                 vibrate();
                 sendCommand(LiveSplitCommand.RESET);
                 return true;

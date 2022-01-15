@@ -71,4 +71,71 @@
     <string name="guide_text_page_6"><![CDATA[Note your IP, you will need it for the app (You may also change port if necessary).<br/><br/>(This IP is needed so the app knows how to connect to your LiveSplit computer.)]]></string>
     <string name="guide_text_page_7">Start the server (Windows may ask for firewall permissions, you have to allow it)</string>
     <string name="guide_text_page_8">Go to the app settings and enter your IP (and port if you changed it)</string>
+
+    <string name="menuConnectionTest">Test connection</string>
+    <string name="connection_test_title">Connection Test</string>
+    <string name="connection_test_button">Run test</string>
+    <string name="connection_test_button_running">Running tests…</string>
+    <string name="connection_test_result_title_start">Test results:</string>
+    <string name="connection_test_result_title">Test results, last run: %1$s</string>
+    <string name="connection_test_1">1. LiveSplit server IP syntax is valid</string>
+    <string name="connection_test_2">2. LiveSplit server port syntax is valid</string>
+    <string name="connection_test_3">3. App has necessary permissions</string>
+    <string name="connection_test_4">4. Device wifi is enabled</string>
+    <string name="connection_test_5">5. Device is connected to wifi network</string>
+    <string name="connection_test_6">6. Device has been assigned an IPv4 address</string>
+    <string name="connection_test_7">7. Network router is pingable</string>
+    <string name="connection_test_8">8. LiveSplit server computer is pingable</string>
+    <string name="connection_test_9">9. LiveSplit server component is pingable</string>
+    <string name="connection_test_10">10. LiveSplit server component connection works</string>
+    <string name="connection_test_11">11. LiveSplit server component can process commands</string>
+    <string name="connection_test_12">12. DEBUG TEST</string>
+    <string name="connection_test_13">13. DEBUG TEST #2</string>
+    <string name="connection_test_info_not_run">Test has not been run for this check</string>
+    <string name="connection_test_running">Test is being run…</string>
+    <string name="connection_test_1_success">%1$s is a valid server IP</string>
+    <string name="connection_test_2_success">%1$s is a valid server port</string>
+    <string name="connection_test_3_success">Success</string>
+    <string name="connection_test_4_success">Success</string>
+    <string name="connection_test_5_success">Success</string>
+    <string name="connection_test_6_success">Device has IPv4: %1$s</string>
+    <string name="connection_test_7_success">Router ping at %1$s was successful</string>
+    <string name="connection_test_8_success">LS Computer ping at %1$s was successful</string>
+    <string name="connection_test_9_success">LS server component could be successfully pinged at %1$s:%2$s</string>
+    <string name="connection_test_10_success">LS server component connection could be established</string>
+    <string name="connection_test_11_success">LS component could respond to \"getcurrenttimerphase\" with: %1$s</string>
+    <string name="connection_test_12_success">Success, response: %1$s</string>
+    <string name="connection_test_13_success">Success, response: %1$s</string>
+    <string name="connection_test_1_error">%1$s is not a valid IPv4 address. Please use the IP the computer is using,
+        where LiveSplit is run on and enter it in the app settings. The syntax format must be something between 0.0.0.0 to 255.255.255.255</string>
+    <string name="connection_test_2_error">%1$s is not a valid port number. Please use the port the LiveSplit server
+        component is using and enter it in the app settings. Ports must be between 0 and 65536</string>
+    <string name="connection_test_3_error_no_internet">Somehow this app lost the necessary internet permission. Without this permission,
+        the app will not work, not even in a local network. This app communicates with the LiveSplit server component
+        via network socket, so it needs this permission. If you have a third-party permission remover gadget,
+        please look into restoring the permissions for this app or try re-installing this app</string>
+    <string name="connection_test_3_error_no_network_state">Somehow this app lost the permission to access the network state.
+        Without this permission, some tests here will fail, but the app itself might still work.
+        If you have a third-party permission remover gadget, you may want to look into restoring the permission for this app or try re-installing this app</string>
+    <string name="connection_test_3_error_no_wifi_state">Somehow this app lost the permission to access the wifi state.
+        Without this permission, some tests here will fail, but the app itself might still work.
+        If you have a third-party permission remover gadget, you may want to look into restoring the permission for this app or try re-installing this app</string>
+    <string name="connection_test_4_error">Wifi seems to be disabled, enable it again? This app works via network socket
+        to communicate with the LiveSplit server component in your network</string>
+    <string name="connection_test_5_error">Your device is not connected to a wifi network, check your wifi settings. Internal error: %1$s</string>
+    <string name="connection_test_6_error_no_ip">Your device does not seem to have an IP assigned from your network.
+        Check your wifi settings or your network. Internal error: %1$s</string>
+    <string name="connection_test_6_error_ipv6">Your device seems to be assigned only the IPv6 address %1$s, this may cause problems.
+        Check your wifi or network settings to assign an IPv4 for your device or hope it still works with IPv6</string>
+    <string name="connection_test_7_error">Network router could not be reached at %1$s. Please check your firewalls or router settings. Internal error: %2$s</string>
+    <string name="connection_test_8_error">The target computer could not be reached at %1$s. Please check your firewalls or router settings. Internal error: %2$s</string>
+    <string name="connection_test_9_error">The LS server component could not be reached at %1$s:%2$s.
+        Please make sure you have LiveSplit and the server component working and running at the correct port.
+        Also check your firewalls or router settings. Internal error: %3$s</string>
+    <string name="connection_test_10_error">The LS server component could establish a socket connection.
+    Make sure the server component is up to date and running.</string>
+    <string name="connection_test_11_error">The LS server component could not process the command \"getcurrenttimerphase\".
+    Make sure the server component is up to date and running.</string>
+    <string name="connection_test_12_error">Error: %1$s</string>
+    <string name="connection_test_13_error">Error: %1$s</string>
 </resources>
