@@ -1,3 +1,6 @@
+0.4.2: (November 22nd 2022)
+- Recompiled app with new Android libraries, no changes.
+
 0.4.1: (July 4th 2018)
 - Fixed timer formatting for runs longer than 1 hour 
 
