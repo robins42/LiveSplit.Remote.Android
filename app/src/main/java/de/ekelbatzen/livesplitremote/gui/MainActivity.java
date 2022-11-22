@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -90,6 +89,11 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
         pauseButton = (Button) findViewById(R.id.pauseButton);
         timer = (Timer) findViewById(R.id.timer);
         networkIndicator = (ProgressBar) findViewById(R.id.networkIndicator);
+
+        startSplitButton.setOnClickListener(this::StartSplitClicked);
+        undoButton.setOnClickListener(this::UndoClicked);
+        skipButton.setOnClickListener(this::SkipClicked);
+        pauseButton.setOnClickListener(this::PauseClicked);
 
         timer.setTextColor(getResources().getColor(darkTheme ? R.color.darkTimerColor : R.color.lightTimerColor));
 
@@ -288,14 +292,7 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
 
         if (themeChanged) {
             themeChanged = false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                recreate();
-            } else {
-                // recreate not available below android 3.0, doing workaround
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            }
+            recreate();
         }
     }
 
@@ -474,17 +471,12 @@ public class MainActivity extends AppCompatActivity implements PollUpdateListene
     }
 
     private void vibrate() {
-        if(!vibrationEnabled) return;
+        if (!vibrationEnabled) return;
 
         if (vibrator == null) {
             vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        }
-        // Below Android 3.0 getSystemService returns null if no vibrator is available
-        if (vibrator != null) {
-            // hasVibrator check is only available since Android 3.0
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && vibrator.hasVibrator()) {
-                vibrator.vibrate(VIBRATION_TIME);
-            }
+        } else if (vibrator.hasVibrator()) {
+            vibrator.vibrate(VIBRATION_TIME);
         }
     }
 

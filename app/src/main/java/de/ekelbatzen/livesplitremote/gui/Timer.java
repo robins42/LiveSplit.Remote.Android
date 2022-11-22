@@ -95,7 +95,6 @@ public class Timer extends AppCompatTextView {
             String[] secondsAndMs = parts[parts.length - 1].split("\\.");
             seconds = Long.parseLong(secondsAndMs[0]);
 
-            //noinspection StringConcatenationMissingWhitespace
             millis = Long.parseLong(secondsAndMs[1] + '0'); // Fixing the things SimpleDateFormat does wrong on some phones
 
             long totalMs = (hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L) + (seconds * 1000L) + millis;
