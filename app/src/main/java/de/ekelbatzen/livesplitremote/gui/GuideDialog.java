@@ -1,7 +1,7 @@
 package de.ekelbatzen.livesplitremote.gui;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
