@@ -122,10 +122,15 @@ public class Timer extends AppCompatTextView {
             String[] secondsAndMs = parts[parts.length - 1].split("\\.");
             seconds = Long.parseLong(secondsAndMs[0]);
 
-            /* The "+ '0'" fixed the things SimpleDateFormat does wrong on some phones with only 2 digits.
-               There may be 7 digits of millisecond accuracy supplied by the server in the 2024+ version,
-               but more than 3 are unnecessary for this app */
-            millis = Long.parseLong((secondsAndMs[1] + '0').substring(0, 3));
+            if (secondsAndMs.length > 1) {
+                /* The "+ '0'" fixed the things SimpleDateFormat does wrong on some phones with only 2 digits.
+                   There may be 7 digits of millisecond accuracy supplied by the server in the 2024+ version,
+                   but more than 3 are unnecessary for this app */
+                millis = Long.parseLong((secondsAndMs[1] + '0').substring(0, 3));
+            } else {
+                // No milliseconds were sent
+                millis = 0;
+            }
 
             long totalMs = (hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L) + (seconds * 1000L) + millis;
 
