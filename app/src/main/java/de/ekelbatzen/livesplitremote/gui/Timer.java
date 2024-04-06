@@ -2,9 +2,10 @@ package de.ekelbatzen.livesplitremote.gui;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import androidx.appcompat.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 import java.util.Locale;
 
@@ -12,11 +13,11 @@ import de.ekelbatzen.livesplitremote.R;
 
 public class Timer extends AppCompatTextView {
     private static final String TAG = Timer.class.getName();
-    private long ms;
+    long ms;
     private boolean running;
     private long lastTick;
     private MainActivity act;
-    private int oooCounter; //out of order, lol
+    int oooCounter; //out of order, lol
     private static boolean hEnabled = true;
     private static boolean hOptional = true;
     private static boolean mEnabled = true;
@@ -77,27 +78,61 @@ public class Timer extends AppCompatTextView {
 
     public void setMs(String lsTime) {
         try {
+            // New internal server uses this format for 0
+            if ("00:00:00".equals(lsTime)) {
+                setMs(0);
+                return;
+            }
+
+            /* "−" Dash seems to be used for null, Unicode 8722.
+               "-" Minus seems to be used for negative time, Unicode 45.
+               Accept both, just treat them as default - */
+            lsTime = lsTime.replace("−", "-");
+
+            if (lsTime.equals("-")) {
+                // This is supposed to be "null" or invalid value
+                setMs(0);
+                Log.w(TAG, "Received 'null' / 'invalid time' response '-', setting time to 0");
+                return;
+            }
+
             String[] parts = lsTime.split(":");
             long hours = 0L;
             long minutes;
             long seconds;
             long millis;
+            long days;
 
             if (parts.length > 2) {
-                // HHH…:mm:ss.SS
-                hours = Long.parseLong(parts[0]);
-                minutes = Long.parseLong(parts[1]);
+                String[] hourParts = parts[0].split("\\.");
+                if (hourParts.length == 2) {
+                    // LiveSplit 2024+ version, format [-][d.]hh:mm:ss[.SSSSSSS]
+                    days = Math.abs(Long.parseLong(hourParts[0]));
+                    hours = days * 24L + Long.parseLong(hourParts[1]);
+                } else {
+                    // LiveSplit pre 2024 version, format HHH…:mm:ss.SS
+                    hours = Math.abs(Long.parseLong(parts[0]));
+                }
+                minutes = Math.abs(Long.parseLong(parts[1]));
             } else {
                 // mm:ss.SS
-                minutes = Long.parseLong(parts[0]);
+                minutes = Math.abs(Long.parseLong(parts[0]));
             }
 
             String[] secondsAndMs = parts[parts.length - 1].split("\\.");
             seconds = Long.parseLong(secondsAndMs[0]);
 
-            millis = Long.parseLong(secondsAndMs[1] + '0'); // Fixing the things SimpleDateFormat does wrong on some phones
+            /* The "+ '0'" fixed the things SimpleDateFormat does wrong on some phones with only 2 digits.
+               There may be 7 digits of millisecond accuracy supplied by the server in the 2024+ version,
+               but more than 3 are unnecessary for this app */
+            millis = Long.parseLong((secondsAndMs[1] + '0').substring(0, 3));
 
             long totalMs = (hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L) + (seconds * 1000L) + millis;
+
+            if (lsTime.startsWith("-") && totalMs > 0) {
+                totalMs *= -1;
+            }
+
             setMs(totalMs);
             oooCounter = 0;
         } catch (NumberFormatException ignored) {
@@ -118,29 +153,35 @@ public class Timer extends AppCompatTextView {
     }
 
     private static String msToTimeformat(long ms) {
-        long allSeconds = ms / 1000L;
         long hours = 0L;
         long minutes = 0L;
         long seconds = 0L;
-        StringBuilder displayedTime = new StringBuilder(11);
+        StringBuilder displayedTime = new StringBuilder(12);
+
+        if (ms < 0) {
+            displayedTime.append("-");
+            ms *= -1;
+        }
+
+        long allSeconds = ms / 1000L;
 
         if (hEnabled) {
             hours = allSeconds / (60L * 60L);
-            if (!hOptional || hours > 0L) {
-                displayedTime.append(String.format(Locale.ENGLISH, "%02d", hours));
+            if (!hOptional || hours != 0L) {
+                displayedTime.append(String.format(Locale.ENGLISH, "%02d", Math.abs(hours)));
                 displayedTime.append(':');
             }
         }
 
         if (mEnabled) {
-            if (hEnabled && (!hOptional || hours > 0L)) {
+            if (hEnabled && (!hOptional || hours != 0L)) {
                 minutes = (allSeconds / 60L) % 60L;
             } else {
                 minutes = allSeconds / 60L;
             }
 
-            if (!mOptional || minutes > 0L || hours > 0L) {
-                displayedTime.append(String.format(Locale.ENGLISH, "%02d", minutes));
+            if (!mOptional || minutes != 0L || hours != 0L) {
+                displayedTime.append(String.format(Locale.ENGLISH, "%02d", Math.abs(minutes)));
                 displayedTime.append(':');
             }
         }
@@ -150,13 +191,13 @@ public class Timer extends AppCompatTextView {
         } else {
             seconds = allSeconds;
         }
-        displayedTime.append(String.format(Locale.ENGLISH, "%02d", seconds));
+        displayedTime.append(String.format(Locale.ENGLISH, "%02d", Math.abs(seconds)));
 
         String msShort = "";
         if (msDigits == 1) {
-            msShort = '.' + String.format(Locale.ENGLISH, "%1d", (ms % 1000L) / 100L);
+            msShort = '.' + String.format(Locale.ENGLISH, "%1d", (Math.abs(ms) % 1000L) / 100L);
         } else if (msDigits == 2) {
-            msShort = '.' + String.format(Locale.ENGLISH, "%02d", (ms % 1000L) / 10L);
+            msShort = '.' + String.format(Locale.ENGLISH, "%02d", (Math.abs(ms) % 1000L) / 10L);
         }
         displayedTime.append(msShort);
 
@@ -186,7 +227,7 @@ public class Timer extends AppCompatTextView {
         Timer.msDigits = msDigits;
     }
 
-    public void onTimerFormatChanged(){
+    public void onTimerFormatChanged() {
         lastTick = System.currentTimeMillis();
         setText(msToTimeformat(ms)); //Redraw with new format
     }
