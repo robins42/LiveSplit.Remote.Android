@@ -1,3 +1,7 @@
+0.5.0: (April 7th 2024)
+- Added support for future LiveSplit API
+- Added support for negative times
+
 0.4.2: (November 22nd 2022)
 - Recompiled app with new Android libraries, no changes.
 
