@@ -1,3 +1,7 @@
+0.5.1: (July 12th 2025)
+- Recompiled app with new Android libraries, no changes in the app
+- Raised minimum required Android version: 4.0.1 -> 5.0
+
 0.5.0: (April 7th 2024)
 - Added support for future LiveSplit API
 - Added support for negative times
